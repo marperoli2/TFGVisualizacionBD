@@ -6,19 +6,16 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
 //d3 components
-import { NominalComparisonComponent } from './d3/nominal-comparison/nominal-comparison.component';
-import { NominalComparisonToastComponent } from './toast/nominal-comparison-toast/nominal-comparison-toast.component';
-import { NominalComparisonChartsjsComponent } from './chartsjs/nominal-comparison-chartsjs/nominal-comparison-chartsjs.component';
+import { PartToWholeComponent } from './part-to-whole/part-to-whole.component';
+import { NominalComparisonComponent } from './nominal-comparison/nominal-comparison.component';
+
 
 //toast components
 
 const routes: Routes = [
 
-  { path: 'd3/nominalComparison', component: NominalComparisonComponent },
-  { path: 'toast/nominalComparison', component: NominalComparisonToastComponent },
-  { path: 'chartsjs/nominalComparison', component: NominalComparisonChartsjsComponent },
-
-
+  { path: 'nominalComparison', component: NominalComparisonComponent },
+  { path: 'partToWhole', component: PartToWholeComponent },
 
 ]
 
@@ -26,8 +23,7 @@ const routes: Routes = [
   declarations: [
     AppComponent,
     NominalComparisonComponent,
-    NominalComparisonToastComponent,
-    NominalComparisonChartsjsComponent
+    PartToWholeComponent,
   ],
   imports: [
     BrowserModule,
