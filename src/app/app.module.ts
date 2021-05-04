@@ -8,6 +8,7 @@ import { AppComponent } from './app.component';
 //d3 components
 import { PartToWholeComponent } from './part-to-whole/part-to-whole.component';
 import { NominalComparisonComponent } from './nominal-comparison/nominal-comparison.component';
+import { CorrelationComponent } from './correlation/correlation.component';
 
 
 //toast components
@@ -16,6 +17,7 @@ const routes: Routes = [
 
   { path: 'nominalComparison', component: NominalComparisonComponent },
   { path: 'partToWhole', component: PartToWholeComponent },
+  { path: 'correlation', component: CorrelationComponent },
 
 ]
 
@@ -24,6 +26,7 @@ const routes: Routes = [
     AppComponent,
     NominalComparisonComponent,
     PartToWholeComponent,
+    CorrelationComponent,
   ],
   imports: [
     BrowserModule,
