@@ -1,7 +1,7 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ScatterChart } from '@toast-ui/chart';
 import { LineController, PointElement, CategoryScale, Chart, LinearScale ,ScatterController, LineElement } from 'chart.js';
-
+import * as d3 from 'd3';
 
 @Component({
   selector: 'app-correlation',
@@ -87,12 +87,63 @@ export class CorrelationComponent implements OnInit {
         //-------------------------------------------------------------------------------------
 
         //D3
-        /*this.margin = 120;
-        this.width = 3000 ;
-        this.height = 400 ;
+        var margin = {top: 10, right: 30, bottom: 30, left: 60};
+        var width = 1400 - margin.left - margin.right;
+        var height = 600 - margin.top - margin.bottom;
+
         //Creación del gráfico con d3
-        this.createSvg();
-        this.drawBars(this.d3Data)*/
+
+        var svgD3 = d3.select("#myD3Chart")
+        .append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform",
+          "translate(" + margin.left + "," + margin.top + ")");
+
+         // Add X axis
+   
+
+        const x = d3.scaleLinear()
+          .domain([0,12 ])
+          .range([ 0, width ]);
+
+        svgD3.append("g")
+          .attr("transform", "translate(0," + height + ")")
+          .call(d3.axisBottom(x).tickFormat(d3.format("d")));
+
+        const y = d3.scaleLinear()
+          .domain([0, 0.20])
+          .range([ height, 0]);
+          svgD3.append("g")
+          .call(d3.axisLeft(y));
+
+          /*
+          {x: 0.142134196465269, y: 0.00618577887381833},
+          {x: 2.96730091613813, y: 0.0509513742071882},*/
+
+        const data3d = [
+        ]
+
+        for (let i = 0; i < this.values.length; i++){
+          data3d.push(this.values[i]);
+
+        }
+
+        
+        const dots = svgD3.append('g');
+
+       
+        dots.selectAll("dot")
+        .data(data3d)
+        .enter()
+        .append("circle")
+        .attr("cx", d => x(d.x))
+        .attr("cy", d => y(d.y))
+        .attr("r", 3)
+        .style("opacity", .5)
+        .style("fill", "#69b3a2");
+        
   
         //-------------------------------------------------------------------------------------
   
@@ -154,7 +205,7 @@ export class CorrelationComponent implements OnInit {
       this.values.push({ x, y });
 
     }
-    console.log(this.values);
+ 
   }
 
 
