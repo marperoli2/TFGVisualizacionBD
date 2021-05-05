@@ -9,6 +9,7 @@ import { AppComponent } from './app.component';
 import { PartToWholeComponent } from './part-to-whole/part-to-whole.component';
 import { NominalComparisonComponent } from './nominal-comparison/nominal-comparison.component';
 import { CorrelationComponent } from './correlation/correlation.component';
+import { DistributionComponent } from './distribution/distribution.component';
 
 
 //toast components
@@ -18,6 +19,7 @@ const routes: Routes = [
   { path: 'nominalComparison', component: NominalComparisonComponent },
   { path: 'partToWhole', component: PartToWholeComponent },
   { path: 'correlation', component: CorrelationComponent },
+  { path: 'distribution', component: DistributionComponent },
 
 ]
 
@@ -27,6 +29,7 @@ const routes: Routes = [
     NominalComparisonComponent,
     PartToWholeComponent,
     CorrelationComponent,
+    DistributionComponent,
   ],
   imports: [
     BrowserModule,
