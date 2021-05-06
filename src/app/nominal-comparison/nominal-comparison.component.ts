@@ -45,6 +45,15 @@ export class NominalComparisonComponent implements OnInit {
 
 
   ngOnInit(): void {
+
+    var prueba = [
+      {item: "Soup", votes: 4},
+      {item: "Cake", votes: 5},
+      {item: "Cabbage", votes: 1},
+      {item: "Ice Cream", votes: 4}
+    ];
+    prueba.sort((a,b) => d3.ascending(a.votes, b.votes));
+    console.log(prueba)
   }
 
   uploadListener($event: any): void {
@@ -110,7 +119,7 @@ export class NominalComparisonComponent implements OnInit {
         this.height = 400 ;
         //Creación del gráfico con d3
         this.createSvg();
-        this.drawBars(this.d3Data);
+        this.drawBars(this.d3Data.sort((a,b) => d3.descending(a.death, b.death)));
 
         reader.onerror = function () {
           console.log('error is occured while reading file!');

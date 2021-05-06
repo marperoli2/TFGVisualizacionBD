@@ -100,11 +100,12 @@ export class PartToWholeComponent implements OnInit {
 
         //D3
         this.margin = 120;
-        this.width = 1500 ;
-        this.height = 400 ;
+        this.width = 400 ;
+        this.height = 1500 ;
         //Creación del gráfico con d3
         this.createSvg();
-        this.drawBars(this.d3Data);
+        this.drawBars(this.d3Data.sort((a,b) => d3.ascending(a.value, b.value)));
+        console.log(this.d3Data)
 
         reader.onerror = function () {
           console.log('error is occured while reading file!');
@@ -180,7 +181,6 @@ export class PartToWholeComponent implements OnInit {
       .append("svg")
       .attr("width", this.width + (this.margin * 2))
       .attr("height", this.height + (this.margin * 2))
-      .attr("height", this.height + (this.margin * 2))
       .append("g")
       .attr("transform", "translate(" + this.margin + "," + this.margin + ")");
 
@@ -189,38 +189,59 @@ export class PartToWholeComponent implements OnInit {
   private drawBars(data: any[]): void {
     // Create the X-axis band scale
 
-    const x = d3.scaleBand()
+    const y = d3.scaleBand()
       .range([0, this.width])
       .domain(data.map(d => d.foodSupply))
       .padding(0.2);
 
+      const x = d3.scaleLinear()
+      .domain([0, this.maxY])
+      .range([0, this.width]);
+
+      console.log(this.height)
+      console.log(this.maxY)
+      
+
     // Draw the X-axis on the DOM
     this.svg.append("g")
-      .attr("transform", "translate(0," + this.height + ")")
-      .call(d3.axisBottom(x))
-      .selectAll("text")
-      .attr("transform", "translate(-10,0)rotate(-45)")
-      .style("text-anchor", "end");
+      .attr("transform", "translate(0," + this.width + ")")
+      .call(d3.axisBottom(x));
 
     // Create the Y-axis band scale
-    const y = d3.scaleLinear()
-      .domain([0, this.maxY])
-      .range([this.height, 0]);
+   
 
     // Draw the Y-axis on the DOM
     this.svg.append("g")
       .call(d3.axisLeft(y));
 
-    // Create and fill the bars
-    this.svg.selectAll("bars")
+
+      this.svg.selectAll("bars")
       .data(data)
       .enter()
       .append("rect")
-      .attr("x", d => x(d.foodSupply))
-      .attr("y", d => y(d.value))
-      .attr("width", x.bandwidth())
-      .attr("height", (d) => this.height - y(d.value))
+      .attr("x", d =>0)
+      .attr("y", d => y(d.foodSupply))
+      .attr("width", d => x(d.value))
+      .attr("height",y.bandwidth)
       .attr("fill", "#d04a35");
+
+      this.svg.append("g")
+      .attr("fill", "white")
+      .attr("text-anchor", "end")
+      .attr("font-family", "sans-serif")
+      .attr("font-size", 12)
+    .selectAll("text")
+    .data(data)
+    .join("text")
+      .attr("x", d => x(d.value))
+      .attr("y", d => y(d.foodSupply))
+      .attr("dy", "1em")
+      .attr("dx", -4)
+      .text(d => (d.value).toFixed(2))
+    .call(text => text.filter(d => x(d.value) - x(0) < 25) // short bars
+      .attr("dx", +4)
+      .attr("fill", "black")
+      .attr("text-anchor", "start"));
   }
 
 
