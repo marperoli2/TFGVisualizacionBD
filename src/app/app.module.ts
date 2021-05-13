@@ -10,6 +10,7 @@ import { PartToWholeComponent } from './part-to-whole/part-to-whole.component';
 import { NominalComparisonComponent } from './nominal-comparison/nominal-comparison.component';
 import { CorrelationComponent } from './correlation/correlation.component';
 import { DistributionComponent } from './distribution/distribution.component';
+import { TimeSeriesComponent } from './time-series/time-series.component';
 
 
 //toast components
@@ -20,6 +21,7 @@ const routes: Routes = [
   { path: 'partToWhole', component: PartToWholeComponent },
   { path: 'correlation', component: CorrelationComponent },
   { path: 'distribution', component: DistributionComponent },
+  { path: 'timeSeries', component: TimeSeriesComponent },
 
 ]
 
@@ -30,6 +32,7 @@ const routes: Routes = [
     PartToWholeComponent,
     CorrelationComponent,
     DistributionComponent,
+    TimeSeriesComponent,
   ],
   imports: [
     BrowserModule,
