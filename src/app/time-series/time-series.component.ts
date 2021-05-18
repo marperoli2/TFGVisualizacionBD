@@ -1,7 +1,7 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { LineChart } from '@toast-ui/chart';
 import {Chart, LineController, LinearScale, CategoryScale, LineElement, PointElement} from 'chart.js';
-
+import * as d3 from 'd3';
 
 @Component({
   selector: 'app-time-series',
@@ -26,9 +26,25 @@ export class TimeSeriesComponent implements OnInit {
       {
         label: '',
         data: [],
+        backgroundColor:'rgba(0, 143, 57)'
       },
     ],
   };
+
+  //PARA D3
+  private svg: any;
+  private margin: number;
+  private width: number;
+  private height: number;
+  private maxY: number = 0;
+  public d3Data: { year: String, Amount: number }[] = [];
+
+  public svgInner;
+  public yScale;  
+  public xScale;
+  public xAxis;
+  public yAxis;
+  public lineGroup;
 
   ngOnInit(): void {
   }
@@ -62,7 +78,7 @@ export class TimeSeriesComponent implements OnInit {
         console.log(seriesName)
 
         this.getDataRecordsArrayFromCSVFile(csvRecordsArray);
-       // this.d3getDataRecordsArrayFromCSVFile(csvRecordsArray, headersRow); //Hace falta el nombre de la cabecera para las series ({Cabecera:Value})
+        this.d3getDataRecordsArrayFromCSVFile(csvRecordsArray, headersRow); //Hace falta el nombre de la cabecera para las series ({Cabecera:Value})
 
         //TOAST
         const toastData = {
@@ -89,6 +105,19 @@ export class TimeSeriesComponent implements OnInit {
         //Creación del gráfico con Chartsjs
         this.createGraphChartsjs(this.chartsjsData);
 
+        //-------------------------------------------------------------------------------------
+
+        //D3
+        this.margin = 120;
+        this.width = 1800;
+        this.height = 900;
+        //Creación del gráfico con d3
+        this.createSvg(seriesName);
+        console.log(this.values);
+
+        console.log("antes")
+        this.drawLine();
+        console.log(this.d3Data)
 
         reader.onerror = function () {
           console.log('error is occured while reading file!');
@@ -107,30 +136,6 @@ export class TimeSeriesComponent implements OnInit {
     this.nominalComparisonChart = new Chart(this.barCanvas.nativeElement, {
       type: "line",
       data: data,
-      /*data: {
-        labels: ['BJP', 'INC', 'AAP', 'CPI', 'CPI-M', 'NCP'],
-        datasets: [{
-          label: '# of Votes',
-          data: [200, 50, 30, 15, 20, 34],
-          backgroundColor: [
-            'rgba(255, 99, 132, 0.2)',
-            'rgba(54, 162, 235, 0.2)',
-            'rgba(255, 206, 86, 0.2)',
-            'rgba(75, 192, 192, 0.2)',
-            'rgba(153, 102, 255, 0.2)',
-            'rgba(255, 159, 64, 0.2)'
-          ],
-          borderColor: [
-            'rgba(255,99,132,1)',
-            'rgba(54, 162, 235, 1)',
-            'rgba(255, 206, 86, 1)',
-            'rgba(75, 192, 192, 1)',
-            'rgba(153, 102, 255, 1)',
-            'rgba(255, 159, 64, 1)'
-          ],
-          borderWidth: 1
-        }]
-      },*/
       options: {
         scales: {
           y: {
@@ -161,6 +166,116 @@ export class TimeSeriesComponent implements OnInit {
 
     const el = document.getElementById('grafica');
     const chart = new LineChart({ el, data, options });
+  }
+
+  private createSvg(SeriesName: string[]): void {
+    
+    this.svg = d3
+      .select("figure#imagen")
+      .append('svg')
+      .attr('height', this.height);
+
+    this.svgInner = this.svg
+      .append('g')
+      .style('transform', 'translate(' + this.margin + 'px, ' + this.margin + 'px)');
+
+    this.yScale = d3
+      .scaleLinear()
+      .domain([d3.max(this.d3Data, d => d.Amount) + 1, d3.min(this.d3Data, d => d.Amount)])
+      .range([0, this.height - 2 * this.margin]);
+
+    this.yAxis = this.svgInner
+      .append('g')
+      .attr('id', 'y-axis')
+      .style('transform', 'translate(' + this.margin + 'px,  0)');
+
+    
+    this.xScale = d3
+      .scaleBand()
+      .domain(SeriesName)
+      .range([0, this.width - 2 * this.margin]);
+
+    this.xAxis = this.svgInner
+      .append('g')
+      .attr('id', 'x-axis')
+      .style('transform', 'translate(0, ' + (this.height - 2 * this.margin) + 'px)');
+
+    this.lineGroup = this.svgInner
+      .append('g')
+      .append('path')
+      .attr('id', 'line')
+      .style('fill', 'none')
+      .style('stroke', 'blue')
+      .style('stroke-width', '2px')
+
+  }
+
+ 
+  private drawLine(): void {
+    this.svg.attr('width', this.width);
+
+    this.xScale.range([this.margin, this.width - 2 * this.margin]);
+
+  
+    const xAxis = d3
+      .axisBottom(this.xScale);
+
+    
+    this.xAxis.call(xAxis).
+    selectAll("text")
+    .attr("transform", "translate(-10,10)rotate(-45)")
+    .style("text-anchor", "end")
+    .style("font-size", 10)
+    .style("fill", "#69a3b2");
+
+    const yAxis = d3
+      .axisLeft(this.yScale);
+
+    this.yAxis.call(yAxis);
+
+    const line = d3
+      .line()
+      .x(d => d[0])
+      .y(d => d[1])
+      .curve(d3.curveMonotoneX);
+
+    const points: [number, number][] = this.d3Data.map(d => [
+      this.xScale(d.year),
+      this.yScale(d.Amount),
+    ]);
+
+    this.lineGroup.attr('d', line(points));
+    
+  }
+
+
+  d3getDataRecordsArrayFromCSVFile(csvRecordsArray: any, header: any[]) {
+
+    var encontrado = false;
+    let foodSupply: any;
+    let value: any;
+
+    let cabecera = (<string>csvRecordsArray[0]).split(',');
+    
+
+    for (let i = 1; i < csvRecordsArray.length && !encontrado; i++) {
+      let currentRecord = (<string>csvRecordsArray[i]).split(',');
+      if (currentRecord[0] === "\"Mundo") {
+       
+        for (let j = 4; j < currentRecord.length - 4; j++) {
+          let Amount = Number(parseFloat(currentRecord[j].trim().replace(/[""]+/g, '')).toFixed(2));
+          if (isNaN(parseFloat(currentRecord[j].trim().replace(/[""]+/g, '')))) {
+            Amount = 0
+          }
+          this.values.push(Amount);
+          let year = cabecera[j].trim().replace(/[""]+/g, '');
+          this.d3Data.push({year, Amount})
+        }
+        encontrado = true; //Para que no siga buscando cuando encuentre Mundo
+      }
+    }
+    console.log(this.d3Data);
+   
   }
 
   getDataRecordsArrayFromCSVFile(csvRecordsArray: any) {

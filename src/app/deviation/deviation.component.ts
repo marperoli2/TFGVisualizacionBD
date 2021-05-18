@@ -1,14 +1,14 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { BarChart, ColumnChart } from '@toast-ui/chart';
+import { ColumnChart } from '@toast-ui/chart';
 import { BarController, BarElement, CategoryScale, Chart, LinearScale } from 'chart.js';
 import * as d3 from 'd3';
 
 @Component({
-  selector: 'app-part-to-whole',
-  templateUrl: './part-to-whole.component.html',
-  styleUrls: ['./part-to-whole.component.css']
+  selector: 'app-deviation',
+  templateUrl: './deviation.component.html',
+  styleUrls: ['./deviation.component.css']
 })
-export class PartToWholeComponent implements OnInit {
+export class DeviationComponent implements OnInit {
 
   constructor() { }
 
@@ -26,7 +26,7 @@ export class PartToWholeComponent implements OnInit {
       {
         label: '',
         data: [],
-        backgroundColor:'rgba(0, 143, 57)'
+        backgroundColor: 'rgba(0, 143, 57)'
       },
     ],
   };
@@ -67,7 +67,7 @@ export class PartToWholeComponent implements OnInit {
 
         for (let i = 0; i < headersRow.length; i++) {
           seriesName.push(headersRow[i].trim().replace(/['"]+/g, ''));
-        } //para quitar dobles comillas con las que sale del csv
+        } //para quitar dobles comillas con las que sale del csv7
 
         this.getDataRecordsArrayFromCSVFile(csvRecordsArray);
         this.d3getDataRecordsArrayFromCSVFile(csvRecordsArray, headersRow); //Hace falta el nombre de la cabecera para las series ({Cabecera:Value})
@@ -101,12 +101,11 @@ export class PartToWholeComponent implements OnInit {
 
         //D3
         this.margin = 120;
-        this.width = 400 ;
-        this.height = 1500 ;
+        this.width = 400;
+        this.height = 1500;
         //Creación del gráfico con d3
         this.createSvg();
-        this.drawBars(this.d3Data.sort((a,b) => d3.ascending(a.value, b.value)));
-        console.log(this.d3Data)
+        this.drawBars(this.d3Data.sort((a, b) => d3.ascending(a.value, b.value)));
 
         reader.onerror = function () {
           console.log('error is occured while reading file!');
@@ -125,13 +124,36 @@ export class PartToWholeComponent implements OnInit {
     this.nominalComparisonChart = new Chart(this.barCanvas.nativeElement, {
       type: "bar",
       data: data,
+      /*data: {
+        labels: ['BJP', 'INC', 'AAP', 'CPI', 'CPI-M', 'NCP'],
+        datasets: [{
+          label: '# of Votes',
+          data: [200, 50, 30, 15, 20, 34],
+          backgroundColor: [
+            'rgba(255, 99, 132, 0.2)',
+            'rgba(54, 162, 235, 0.2)',
+            'rgba(255, 206, 86, 0.2)',
+            'rgba(75, 192, 192, 0.2)',
+            'rgba(153, 102, 255, 0.2)',
+            'rgba(255, 159, 64, 0.2)'
+          ],
+          borderColor: [
+            'rgba(255,99,132,1)',
+            'rgba(54, 162, 235, 1)',
+            'rgba(255, 206, 86, 1)',
+            'rgba(75, 192, 192, 1)',
+            'rgba(153, 102, 255, 1)',
+            'rgba(255, 159, 64, 1)'
+          ],
+          borderWidth: 1
+        }]
+      },*/
       options: {
-        indexAxis: 'y',
         scales: {
-          x: {
+          y: {
             type: 'linear',
-            beginAtZero: true,
-          },
+            beginAtZero: true
+          }
         }
       }
     });
@@ -149,7 +171,7 @@ export class PartToWholeComponent implements OnInit {
     options.chart.width = 70 * data.series[0].data.length;
 
     const el = document.getElementById('grafica');
-    const chart = new BarChart({ el, data, options });
+    const chart = new ColumnChart({ el, data, options });
 
 
   }
@@ -172,13 +194,10 @@ export class PartToWholeComponent implements OnInit {
       .domain(data.map(d => d.foodSupply))
       .padding(0.2);
 
-      const x = d3.scaleLinear()
+    const x = d3.scaleLinear()
       .domain([0, this.maxY])
       .range([0, this.width]);
 
-      console.log(this.height)
-      console.log(this.maxY)
-      
 
     // Draw the X-axis on the DOM
     this.svg.append("g")
@@ -186,40 +205,40 @@ export class PartToWholeComponent implements OnInit {
       .call(d3.axisBottom(x));
 
     // Create the Y-axis band scale
-   
+
 
     // Draw the Y-axis on the DOM
     this.svg.append("g")
       .call(d3.axisLeft(y));
 
 
-      this.svg.selectAll("bars")
+    this.svg.selectAll("bars")
       .data(data)
       .enter()
       .append("rect")
-      .attr("x", d =>0)
+      .attr("x", d => 0)
       .attr("y", d => y(d.foodSupply))
       .attr("width", d => x(d.value))
-      .attr("height",y.bandwidth)
+      .attr("height", y.bandwidth)
       .attr("fill", "#d04a35");
 
-      this.svg.append("g")
+    this.svg.append("g")
       .attr("fill", "white")
       .attr("text-anchor", "end")
       .attr("font-family", "sans-serif")
       .attr("font-size", 12)
-    .selectAll("text")
-    .data(data)
-    .join("text")
+      .selectAll("text")
+      .data(data)
+      .join("text")
       .attr("x", d => x(d.value))
       .attr("y", d => y(d.foodSupply))
       .attr("dy", "1em")
       .attr("dx", -4)
       .text(d => (d.value).toFixed(2))
-    .call(text => text.filter(d => x(d.value) - x(0) < 25) // short bars
-      .attr("dx", +4)
-      .attr("fill", "black")
-      .attr("text-anchor", "start"));
+      .call(text => text.filter(d => x(d.value) - x(0) < 25) // short bars
+        .attr("dx", +4)
+        .attr("fill", "black")
+        .attr("text-anchor", "start"));
   }
 
 
@@ -235,9 +254,9 @@ export class PartToWholeComponent implements OnInit {
 
       country = currentRecord[0].trim().replace(/['"]+/g, '');
 
-      if (country === "Spain"){
+      if (country === "Spain") {
         for (let j = 1; j < currentRecord.length - 8; j++) {
-          foodSupply = header[j-1].trim().replace(/['"]+/g, '');
+          foodSupply = header[j - 1].trim().replace(/['"]+/g, '');
           if (!isNaN(parseFloat(currentRecord[j]))) {
             value = parseFloat(currentRecord[j].trim().replace(/['"]+/g, ''));
             if (value > this.maxY) {
@@ -246,7 +265,7 @@ export class PartToWholeComponent implements OnInit {
           } else {
             value = 0;
           }
-          this.d3Data.push({foodSupply, value})
+          this.d3Data.push({ foodSupply, value })
         }
         encontrado = true;
       }
@@ -256,22 +275,40 @@ export class PartToWholeComponent implements OnInit {
 
   getDataRecordsArrayFromCSVFile(csvRecordsArray: any) {
 
-    var encontrado = false;
+    var encontradoBelgium = false;
+    var encontradoSpain = false;
+    var belgiumValues = [];
+    var spainValues = [];
 
-    for (let i = 1; i < csvRecordsArray.length && !encontrado; i++) {
-      let currentRecord = (<string>csvRecordsArray[i]).split(',');
-      console.log(currentRecord[0])
-      if (currentRecord[0] === "\"Spain\"") {
-        for (let j = 1; j < currentRecord.length - 8; j++) {
-          let aux = Number(parseFloat(currentRecord[j]).toFixed(2));
-          if (isNaN(parseFloat(currentRecord[j]))) {
+    for (let i = 1; i < csvRecordsArray.length && !(encontradoBelgium && encontradoSpain); i++) {
+      let currentRecordj = (<string>csvRecordsArray[i]).split(',');
+      if (currentRecordj[0] === "\"Belgium\"") {
+        for (let j = 1; j < currentRecordj.length - 8; j++) {
+          let aux = Number(parseFloat(currentRecordj[j]).toFixed(2));
+          if (isNaN(parseFloat(currentRecordj[j]))) {
             aux = 0
           }
-          this.values.push(aux);
+          belgiumValues.push(aux);
         }
-        encontrado = true; //Para que no siga buscando cuando encuentre España
+        encontradoBelgium = true; //Para que no siga buscando cuando encuentre España
+      }
+      if (currentRecordj[0] === "\"Spain\"") {
+        for (let j = 1; j < currentRecordj.length - 8; j++) {
+          let aux = Number(parseFloat(currentRecordj[j]).toFixed(2));
+          if (isNaN(parseFloat(currentRecordj[j]))) {
+            aux = 0
+          }
+          spainValues.push(aux);
+        }
+        encontradoSpain = true; //Para que no siga buscando cuando encuentre España
       }
     }
+    for (let k = 0; k<belgiumValues.length; k++){
+      this.values.push((belgiumValues[k]-spainValues[k]).toFixed(2))
+    }
+    console.log(belgiumValues);
+    console.log(spainValues);
+    console.log(this.values)
   }
 
   isValidCSVFile(file: any) {
@@ -292,6 +329,7 @@ export class PartToWholeComponent implements OnInit {
     this.categorias = [];
     this.values = [];
   }
+
 
 
 }

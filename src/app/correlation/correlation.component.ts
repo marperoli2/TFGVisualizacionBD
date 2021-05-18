@@ -29,7 +29,8 @@ export class CorrelationComponent implements OnInit {
     datasets: [
       { 
         label: '',
-        data: []
+        data: [],
+        backgroundColor:'rgba(0, 143, 57)'
       },
     ],
   };

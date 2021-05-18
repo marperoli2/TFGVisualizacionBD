@@ -11,6 +11,7 @@ import { NominalComparisonComponent } from './nominal-comparison/nominal-compari
 import { CorrelationComponent } from './correlation/correlation.component';
 import { DistributionComponent } from './distribution/distribution.component';
 import { TimeSeriesComponent } from './time-series/time-series.component';
+import { DeviationComponent } from './deviation/deviation.component';
 
 
 //toast components
@@ -22,6 +23,7 @@ const routes: Routes = [
   { path: 'correlation', component: CorrelationComponent },
   { path: 'distribution', component: DistributionComponent },
   { path: 'timeSeries', component: TimeSeriesComponent },
+  { path: 'deviation', component: DeviationComponent },
 
 ]
 
@@ -33,6 +35,7 @@ const routes: Routes = [
     CorrelationComponent,
     DistributionComponent,
     TimeSeriesComponent,
+    DeviationComponent,
   ],
   imports: [
     BrowserModule,
