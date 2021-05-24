@@ -1,6 +1,6 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { BarChart, ColumnChart } from '@toast-ui/chart';
-import { BarController, BarElement, CategoryScale, Chart, LinearScale } from 'chart.js';
+import { BarController, BarElement, CategoryScale, Chart, LinearScale, Title } from 'chart.js';
 import * as d3 from 'd3';
 
 @Component({
@@ -26,7 +26,7 @@ export class PartToWholeComponent implements OnInit {
       {
         label: '',
         data: [],
-        backgroundColor:'rgba(0, 143, 57)'
+        backgroundColor: 'rgba(0, 143, 57)'
       },
     ],
   };
@@ -83,7 +83,7 @@ export class PartToWholeComponent implements OnInit {
           ],
         };
         toastData.categories = seriesName;
-        toastData.series[0].name = "%";
+        toastData.series[0].name = "Porcentaje de consumo en España:";
         toastData.series[0].data = this.values;
         //Creación del gráfico con Toast
         this.createGraphToast(toastData);
@@ -100,12 +100,12 @@ export class PartToWholeComponent implements OnInit {
         //-------------------------------------------------------------------------------------
 
         //D3
-        this.margin = 120;
-        this.width = 400 ;
-        this.height = 1500 ;
+        this.margin = 140;
+        this.width = 400;
+        this.height = 400;
         //Creación del gráfico con d3
         this.createSvg();
-        this.drawBars(this.d3Data.sort((a,b) => d3.ascending(a.value, b.value)));
+        this.drawBars(this.d3Data.sort((a, b) => d3.ascending(a.value, b.value)));
         console.log(this.d3Data)
 
         reader.onerror = function () {
@@ -121,14 +121,23 @@ export class PartToWholeComponent implements OnInit {
 
   private createGraphChartsjs(data: any) {
 
-    Chart.register(BarController, LinearScale, CategoryScale, BarElement);
+    Chart.register(BarController, LinearScale, CategoryScale, BarElement, Title);
     this.nominalComparisonChart = new Chart(this.barCanvas.nativeElement, {
       type: "bar",
       data: data,
       options: {
+        plugins: {
+          title: {
+            display: true,
+            text: 'Part To Whole - ChartsJS',
+          }
+        },
         indexAxis: 'y',
         scales: {
           x: {
+            title: {
+              text: "hola"
+            },
             type: 'linear',
             beginAtZero: true,
           },
@@ -143,9 +152,15 @@ export class PartToWholeComponent implements OnInit {
 
     const options = {
       chart: { title: '', width: 15000, height: 500 },
+      xAxis: {
+        title: 'Porcentaje de consumo en España',
+      },
+      yAxis: {
+        title: 'Tipo de alimentos',
+      },
     };
 
-    options.chart.title = "Toast part to whole";
+    options.chart.title = "Part To Whole - Toast";
     options.chart.width = 70 * data.series[0].data.length;
 
     const el = document.getElementById('grafica');
@@ -172,13 +187,13 @@ export class PartToWholeComponent implements OnInit {
       .domain(data.map(d => d.foodSupply))
       .padding(0.2);
 
-      const x = d3.scaleLinear()
+    const x = d3.scaleLinear()
       .domain([0, this.maxY])
       .range([0, this.width]);
 
-      console.log(this.height)
-      console.log(this.maxY)
-      
+    console.log(this.height)
+    console.log(this.maxY)
+
 
     // Draw the X-axis on the DOM
     this.svg.append("g")
@@ -186,40 +201,63 @@ export class PartToWholeComponent implements OnInit {
       .call(d3.axisBottom(x));
 
     // Create the Y-axis band scale
-   
+
 
     // Draw the Y-axis on the DOM
     this.svg.append("g")
       .call(d3.axisLeft(y));
 
 
-      this.svg.selectAll("bars")
+    this.svg.selectAll("bars")
       .data(data)
       .enter()
       .append("rect")
-      .attr("x", d =>0)
+      .attr("x", d => 0)
       .attr("y", d => y(d.foodSupply))
       .attr("width", d => x(d.value))
-      .attr("height",y.bandwidth)
+      .attr("height", y.bandwidth)
       .attr("fill", "#d04a35");
 
-      this.svg.append("g")
+    this.svg.append("g")
       .attr("fill", "white")
       .attr("text-anchor", "end")
       .attr("font-family", "sans-serif")
       .attr("font-size", 12)
-    .selectAll("text")
-    .data(data)
-    .join("text")
+      .selectAll("text")
+      .data(data)
+      .join("text")
       .attr("x", d => x(d.value))
       .attr("y", d => y(d.foodSupply))
       .attr("dy", "1em")
       .attr("dx", -4)
       .text(d => (d.value).toFixed(2))
-    .call(text => text.filter(d => x(d.value) - x(0) < 25) // short bars
-      .attr("dx", +4)
-      .attr("fill", "black")
-      .attr("text-anchor", "start"));
+      .call(text => text.filter(d => x(d.value) - x(0) < 25) // short bars
+        .attr("dx", +4)
+        .attr("fill", "black")
+        .attr("text-anchor", "start"));
+
+    //Añadiendo título al gráfico
+    this.svg.append("text")
+      .attr("x", this.width / 2)
+      .attr("y", 0 - (this.margin / 6))
+      .attr("text-anchor", "middle")
+      .style("font-size", "16px")
+      .text("Part To Whole - d3");
+
+    //Añadiendo título al eje Y
+    this.svg.append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 0 - this.margin)
+      .attr("x", 0 - (this.width / 2))
+      .attr("dy", "1em")
+      .style("text-anchor", "middle")
+      .text("Tipo de alimentos");
+
+    //Añadiendo título al eje X
+    this.svg.append("text")
+      .attr("transform", "translate(" + (this.width / 2) + ", " + (this.height + 50) + ")")
+      .style("text-anchor", "middle")
+      .text("Porcentaje de consumo en España");
   }
 
 
@@ -235,9 +273,9 @@ export class PartToWholeComponent implements OnInit {
 
       country = currentRecord[0].trim().replace(/['"]+/g, '');
 
-      if (country === "Spain"){
+      if (country === "Spain") {
         for (let j = 1; j < currentRecord.length - 8; j++) {
-          foodSupply = header[j-1].trim().replace(/['"]+/g, '');
+          foodSupply = header[j - 1].trim().replace(/['"]+/g, '');
           if (!isNaN(parseFloat(currentRecord[j]))) {
             value = parseFloat(currentRecord[j].trim().replace(/['"]+/g, ''));
             if (value > this.maxY) {
@@ -246,7 +284,7 @@ export class PartToWholeComponent implements OnInit {
           } else {
             value = 0;
           }
-          this.d3Data.push({foodSupply, value})
+          this.d3Data.push({ foodSupply, value })
         }
         encontrado = true;
       }

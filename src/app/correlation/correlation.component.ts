@@ -1,6 +1,6 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ScatterChart } from '@toast-ui/chart';
-import { LineController, PointElement, CategoryScale, Chart, LinearScale ,ScatterController, LineElement } from 'chart.js';
+import { LineController, PointElement, CategoryScale, Chart, LinearScale, ScatterController, LineElement, Title } from 'chart.js';
 import * as d3 from 'd3';
 
 @Component({
@@ -27,10 +27,10 @@ export class CorrelationComponent implements OnInit {
   chartsjsData = {
     labels: [],
     datasets: [
-      { 
+      {
         label: '',
         data: [],
-        backgroundColor:'rgba(0, 143, 57)'
+        backgroundColor: 'rgba(0, 143, 57)'
       },
     ],
   };
@@ -69,8 +69,8 @@ export class CorrelationComponent implements OnInit {
         const toastData = {
           series: [
             {
-              name: 'Correlacion',
-              data: [ ]
+              name: 'Correlación',
+              data: []
             },
           ]
         };
@@ -88,66 +88,100 @@ export class CorrelationComponent implements OnInit {
         //-------------------------------------------------------------------------------------
 
         //D3
-        var margin = {top: 10, right: 30, bottom: 30, left: 60};
-        var width = 1400 - margin.left - margin.right;
-        var height = 600 - margin.top - margin.bottom;
+        var margin = { top: 30, right: 30, bottom: 30, left: 60 };
+        var width = 1000 - margin.left - margin.right;
+        var height = 400 - margin.top - margin.bottom;
 
         //Creación del gráfico con d3
 
         var svgD3 = d3.select("#myD3Chart")
-        .append("svg")
-        .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
-        .append("g")
-        .attr("transform",
-          "translate(" + margin.left + "," + margin.top + ")");
+          .append("svg")
+          .attr("width", width + margin.left + margin.right)
+          .attr("height", height + margin.top + margin.bottom)
+          .append("g")
+          .attr("transform",
+            "translate(" + margin.left + "," + margin.top + ")");
 
-         // Add X axis
-   
+        let data3d = [];
+        let valorEjeX = [];
+        let valorEjeY = [];
+
+        for (let i = 0; i < this.values.length; i++) {
+          data3d.push(this.values[i]);
+          valorEjeX.push(this.values[i].x)
+          valorEjeY.push(this.values[i].y)
+        }
+
+        // Add X axis
+
 
         const x = d3.scaleLinear()
-          .domain([0,12 ])
-          .range([ 0, width ]);
+          .domain([0, d3.max(valorEjeX)])
+          .range([0, width]);
 
         svgD3.append("g")
           .attr("transform", "translate(0," + height + ")")
-          .call(d3.axisBottom(x).tickFormat(d3.format("d")));
+          .call(d3.axisBottom(x)
+            .tickFormat(d3.format("d"))
+            .tickSize(-height))
+          .call(g => g.selectAll(".tick:not(:first-of-type) line")
+            .attr("stroke", "grey"));
 
         const y = d3.scaleLinear()
-          .domain([0, 0.20])
-          .range([ height, 0]);
-          svgD3.append("g")
-          .call(d3.axisLeft(y));
+          .domain([0, d3.max(valorEjeY)])
+          .range([height, 0]);
+        svgD3.append("g")
+          .call(d3.axisLeft(y)
+            .tickSize(-width))
+          .call(g => g.selectAll(".tick:not(:first-of-type) line")
+            .attr("stroke", "grey"));
 
-          /*
-          {x: 0.142134196465269, y: 0.00618577887381833},
-          {x: 2.96730091613813, y: 0.0509513742071882},*/
+        /*
+        {x: 0.142134196465269, y: 0.00618577887381833},
+        {x: 2.96730091613813, y: 0.0509513742071882},*/
 
-        const data3d = [
-        ]
 
-        for (let i = 0; i < this.values.length; i++){
-          data3d.push(this.values[i]);
 
-        }
 
-        
         const dots = svgD3.append('g');
 
-       
+
         dots.selectAll("dot")
-        .data(data3d)
-        .enter()
-        .append("circle")
-        .attr("cx", d => x(d.x))
-        .attr("cy", d => y(d.y))
-        .attr("r", 3)
-        .style("opacity", .5)
-        .style("fill", "#69b3a2");
-        
-  
+          .data(data3d)
+          .enter()
+          .append("circle")
+          .attr("cx", d => x(d.x))
+          .attr("cy", d => y(d.y))
+          .attr("r", 3)
+          .style("opacity", .5)
+          .style("fill", "#69b3a2");
+
+        //Añadiendo título al gráfico
+        svgD3.append("text")
+          .attr("x", (width / 2))
+          .attr("y", -margin.top / 2)
+          .attr("text-anchor", "middle")
+          .style("font-size", "16px")
+          .text("Correlation - d3");
+
+        //Añadiendo título al eje Y
+        svgD3.append("text")
+          .attr("transform", "rotate(-90)")
+          .attr("y", -margin.left)
+          .attr("x", 0 - (height / 2))
+          .attr("dy", "1em")
+          .style("text-anchor", "middle")
+          .text("Porcentaje de muertes por covid en personas infectadas");
+
+        //Añadiendo título al eje X
+        svgD3.append("text")
+          .attr("transform", "translate(" + (width / 2) + " ," + (height + margin.bottom) + ")")
+          .style("text-anchor", "middle")
+          .text("Porcentaje de población con obesidad");
+
+
         //-------------------------------------------------------------------------------------
-  
+
 
         reader.onerror = function () {
           console.log('error is occured while reading file!');
@@ -162,27 +196,32 @@ export class CorrelationComponent implements OnInit {
 
   private createGraphChartsjs(data: any) {
 
-    Chart.register(LineController, LineElement, ScatterController,PointElement, CategoryScale, LinearScale);
+    Chart.register(LineController, LineElement, ScatterController, PointElement, CategoryScale, LinearScale, Title);
     this.correlationChart = new Chart(this.barCanvas.nativeElement, {
       type: "scatter",
       data: data,
       options: {
         responsive: true, // Instruct chart js to respond nicely.
         maintainAspectRatio: false, // Add to prevent default behaviour of full-width/height 
-        }
+        plugins: {
+          title: {
+            display: true,
+            text: 'Correlation - ChartsJS',
+          }
+        },
       }
+    }
     );
   }
 
   createGraphToast(data: any) {
 
     const options = {
-      chart: { title: 'Confirmado', width: 900, height: 300 },
+      chart: { title: 'Correlation - Toast', width: 900, height: 300 },
       xAxis: {
-        title: 'Death'
-
+        title: 'Porcentaje de población con obesidad'
       },
-      yAxis: { title: 'Deaths (kg)' },
+      yAxis: { title: 'Porcentaje de muertes por covid en personas infectadas' },
     };
 
     const el = document.getElementById('chart-area');
@@ -195,7 +234,7 @@ export class CorrelationComponent implements OnInit {
 
     for (let i = 1; i < csvRecordsArray.length; i++) {
       let currentRecord = (<string>csvRecordsArray[i]).split(',');
-      let x = parseFloat(currentRecord[26]);//*parseFloat(currentRecord[30]);
+      let x = parseFloat(currentRecord[24]);//*parseFloat(currentRecord[30]);
       let y = parseFloat(currentRecord[27]);//*parseFloat(currentRecord[30]);
       if (isNaN(x)) {
         x = 0;
@@ -206,7 +245,8 @@ export class CorrelationComponent implements OnInit {
       this.values.push({ x, y });
 
     }
- 
+    console.log(this.values)
+
   }
 
 

@@ -1,6 +1,6 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ColumnChart } from '@toast-ui/chart';
-import { BarController, BarElement, CategoryScale, Chart, LinearScale } from 'chart.js';
+import { BarController, BarElement, CategoryScale, Chart, LinearScale, Title } from 'chart.js';
 import * as d3 from 'd3';
 
 @Component({
@@ -83,7 +83,7 @@ export class DeviationComponent implements OnInit {
           ],
         };
         toastData.categories = seriesName;
-        toastData.series[0].name = "%";
+        toastData.series[0].name = "Porcenataje de diferencia Bélgica - España: ";
         toastData.series[0].data = this.values;
         //Creación del gráfico con Toast
         this.createGraphToast(toastData);
@@ -100,12 +100,11 @@ export class DeviationComponent implements OnInit {
         //-------------------------------------------------------------------------------------
 
         //D3
-        this.margin = 120;
-        this.width = 400;
-        this.height = 1500;
+
         //Creación del gráfico con d3
-        this.createSvg();
-        this.drawBars(this.d3Data.sort((a, b) => d3.ascending(a.value, b.value)));
+        this.draw3d();
+
+
 
         reader.onerror = function () {
           console.log('error is occured while reading file!');
@@ -120,35 +119,17 @@ export class DeviationComponent implements OnInit {
 
   private createGraphChartsjs(data: any) {
 
-    Chart.register(BarController, LinearScale, CategoryScale, BarElement);
+    Chart.register(BarController, LinearScale, CategoryScale, BarElement, Title);
     this.nominalComparisonChart = new Chart(this.barCanvas.nativeElement, {
       type: "bar",
       data: data,
-      /*data: {
-        labels: ['BJP', 'INC', 'AAP', 'CPI', 'CPI-M', 'NCP'],
-        datasets: [{
-          label: '# of Votes',
-          data: [200, 50, 30, 15, 20, 34],
-          backgroundColor: [
-            'rgba(255, 99, 132, 0.2)',
-            'rgba(54, 162, 235, 0.2)',
-            'rgba(255, 206, 86, 0.2)',
-            'rgba(75, 192, 192, 0.2)',
-            'rgba(153, 102, 255, 0.2)',
-            'rgba(255, 159, 64, 0.2)'
-          ],
-          borderColor: [
-            'rgba(255,99,132,1)',
-            'rgba(54, 162, 235, 1)',
-            'rgba(255, 206, 86, 1)',
-            'rgba(75, 192, 192, 1)',
-            'rgba(153, 102, 255, 1)',
-            'rgba(255, 159, 64, 1)'
-          ],
-          borderWidth: 1
-        }]
-      },*/
       options: {
+        plugins: {
+          title: {
+            display: true,
+            text: 'Deviation - ChartsJS',
+          }
+        },
         scales: {
           y: {
             type: 'linear',
@@ -165,9 +146,15 @@ export class DeviationComponent implements OnInit {
 
     const options = {
       chart: { title: '', width: 15000, height: 500 },
+      xAxis: {
+        title: 'Tipo de alimentos',
+      },
+      yAxis: {
+        title: 'Porcentaje de diferencia Bélgica - España',
+      },
     };
 
-    options.chart.title = "Toast part to whole";
+    options.chart.title = "Deviation - Toast";
     options.chart.width = 70 * data.series[0].data.length;
 
     const el = document.getElementById('grafica');
@@ -176,100 +163,149 @@ export class DeviationComponent implements OnInit {
 
   }
 
-  private createSvg(): void {
+  private draw3d(): void {
+
+    let margin: number = 50;
+    let width: number = 1200;
+    let height: number = 400;
+
+    let data: number[] = [];
+    for (let k = 0; k < this.d3Data.length; k++) {
+      data.push(Number(parseFloat(this.d3Data[k].value).toFixed(2)));
+    }
+
     this.svg = d3.select("figure#imagen")
       .append("svg")
-      .attr("width", this.width + (this.margin * 2))
-      .attr("height", this.height + (this.margin * 2))
+      .attr("width", width + (margin * 2))
+      .attr("height", height + (margin * 3.5))
       .append("g")
-      .attr("transform", "translate(" + this.margin + "," + this.margin + ")");
+      .attr("transform", "translate(" + margin + "," + margin + ")");
 
-  }
-
-  private drawBars(data: any[]): void {
-    // Create the X-axis band scale
-
-    const y = d3.scaleBand()
-      .range([0, this.width])
-      .domain(data.map(d => d.foodSupply))
-      .padding(0.2);
-
-    const x = d3.scaleLinear()
-      .domain([0, this.maxY])
-      .range([0, this.width]);
-
+    const x = d3.scaleBand()
+      .range([0, width])
+      .domain(this.d3Data.map(d => d.foodSupply));
 
     // Draw the X-axis on the DOM
     this.svg.append("g")
-      .attr("transform", "translate(0," + this.width + ")")
-      .call(d3.axisBottom(x));
+      .attr("transform", "translate(0," + height + ")")
+      .call(d3.axisBottom(x)
+        .tickSize(-height))
+      .call(g => g.selectAll(".tick:not(:first-of-type) line")
+        .attr("stroke", "grey"))
+      .selectAll("text")
+      .attr("transform", "translate(-10,0)rotate(-45)")
+      .style("text-anchor", "end");
 
     // Create the Y-axis band scale
 
+    var y = d3.scaleLinear()
+      .domain([d3.min(data), d3.max(data)])
+      .range([height, 0]);
 
-    // Draw the Y-axis on the DOM
-    this.svg.append("g")
-      .call(d3.axisLeft(y));
+    // Añado una línea central
+    this.svg.append("line")
+      .attr("x1", -6)
+      .attr("y1", y(0))//so that the line passes through the y 0
+      .attr("x2", width)
+      .attr("y2", y(0))//so that the line passes through the y 0
+      .style("stroke", "black");
+
+    const yAxisScale = d3.scaleLinear()
+      .domain([d3.min(data), d3.max(data)])
+      .range([height, 0]);
 
 
+    var yAxis = d3.axisLeft(yAxisScale)
+      .ticks(5)
+      .tickSize(-width);
+
+    this.svg.append('g')
+      .attr('transform', function (d) {
+        return 'translate(0, 0)';
+      })
+      .call(yAxis)
+      .call(g => g.selectAll(".tick:not(:first-of-type) line")
+        .attr("stroke", "grey"));;
+
+
+    // Create and fill the bars
     this.svg.selectAll("bars")
-      .data(data)
+      .data(this.d3Data)
       .enter()
       .append("rect")
-      .attr("x", d => 0)
-      .attr("y", d => y(d.foodSupply))
-      .attr("width", d => x(d.value))
-      .attr("height", y.bandwidth)
-      .attr("fill", "#d04a35");
+      .attr("x", function (d) { return x(d.foodSupply); })
+      .attr("y", function (d) { return y(Math.max(0, d.value)); })
+      .attr("height", function (d) { return Math.abs(y(0) - y(d.value)); })
+      .attr("width", x.bandwidth())
+      .style("fill", "blue")
+      .style("stroke", "black")
+      .style("stroke-width", "1px");
 
-    this.svg.append("g")
-      .attr("fill", "white")
-      .attr("text-anchor", "end")
-      .attr("font-family", "sans-serif")
-      .attr("font-size", 12)
-      .selectAll("text")
-      .data(data)
-      .join("text")
-      .attr("x", d => x(d.value))
-      .attr("y", d => y(d.foodSupply))
+    //Añadiendo título al gráfico
+    this.svg.append("text")
+      .attr("x", width / 2)
+      .attr("y", -10)
+      .attr("text-anchor", "middle")
+      .style("font-size", "16px")
+      .text("Deviation - d3");
+
+    //Añadiendo título al eje Y
+    this.svg.append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 0 - margin * 1.1)
+      .attr("x", 0 - (height / 2))
       .attr("dy", "1em")
-      .attr("dx", -4)
-      .text(d => (d.value).toFixed(2))
-      .call(text => text.filter(d => x(d.value) - x(0) < 25) // short bars
-        .attr("dx", +4)
-        .attr("fill", "black")
-        .attr("text-anchor", "start"));
-  }
+      .style("text-anchor", "middle")
+      .text("Porcentaje de diferencia Bélgica - España");
 
+    //Añadiendo título al eje X
+    this.svg.append("text")
+      .attr("transform", "translate(" + (width / 2) + " ," + (height + margin * 2) + ")")
+      .style("text-anchor", "middle")
+      .text("Tipo de alimentos");
+
+  }
 
   d3getDataRecordsArrayFromCSVFile(csvRecordsArray: any, header: any[]) {
 
-    var encontrado = false;
     let country: any;
     let foodSupply: any;
     let value: any;
+    var encontradoBelgium = false;
+    var encontradoSpain = false;
+    var belgiumValues = [];
+    var spainValues = [];
 
-    for (let i = 1; i < csvRecordsArray.length && !encontrado; i++) {
+    for (let i = 1; i < csvRecordsArray.length && !(encontradoBelgium && encontradoSpain); i++) {
       let currentRecord = (<string>csvRecordsArray[i]).split(',');
 
-      country = currentRecord[0].trim().replace(/['"]+/g, '');
-
-      if (country === "Spain") {
+      if (currentRecord[0] === "\"Belgium\"") {
         for (let j = 1; j < currentRecord.length - 8; j++) {
-          foodSupply = header[j - 1].trim().replace(/['"]+/g, '');
-          if (!isNaN(parseFloat(currentRecord[j]))) {
-            value = parseFloat(currentRecord[j].trim().replace(/['"]+/g, ''));
-            if (value > this.maxY) {
-              this.maxY = value;
-            }
-          } else {
-            value = 0;
+          let aux = Number(parseFloat(currentRecord[j]).toFixed(2));
+          if (isNaN(parseFloat(currentRecord[j]))) {
+            aux = 0
           }
-          this.d3Data.push({ foodSupply, value })
+          belgiumValues.push(aux);
         }
-        encontrado = true;
+        encontradoBelgium = true; //Para que no siga buscando cuando encuentre España
+      }
+      if (currentRecord[0] === "\"Spain\"") {
+        for (let j = 1; j < currentRecord.length - 8; j++) {
+          let aux = Number(parseFloat(currentRecord[j]).toFixed(2));
+          if (isNaN(parseFloat(currentRecord[j]))) {
+            aux = 0
+          }
+          spainValues.push(aux);
+        }
+        encontradoSpain = true; //Para que no siga buscando cuando encuentre España
       }
     }
+    for (let k = 0; k < belgiumValues.length; k++) {
+      foodSupply = header[k].trim().replace(/['"]+/g, '');
+      value = (belgiumValues[k] - spainValues[k]).toFixed(2)
+      this.d3Data.push({ foodSupply, value })
+    }
+
   }
 
 
@@ -303,8 +339,8 @@ export class DeviationComponent implements OnInit {
         encontradoSpain = true; //Para que no siga buscando cuando encuentre España
       }
     }
-    for (let k = 0; k<belgiumValues.length; k++){
-      this.values.push((belgiumValues[k]-spainValues[k]).toFixed(2))
+    for (let k = 0; k < belgiumValues.length; k++) {
+      this.values.push((belgiumValues[k] - spainValues[k]).toFixed(2))
     }
     console.log(belgiumValues);
     console.log(spainValues);

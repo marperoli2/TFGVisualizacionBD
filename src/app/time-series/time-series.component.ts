@@ -1,6 +1,6 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { LineChart } from '@toast-ui/chart';
-import {Chart, LineController, LinearScale, CategoryScale, LineElement, PointElement} from 'chart.js';
+import { Chart, LineController, LinearScale, CategoryScale, LineElement, PointElement, Title } from 'chart.js';
 import * as d3 from 'd3';
 
 @Component({
@@ -16,7 +16,7 @@ export class TimeSeriesComponent implements OnInit {
   @ViewChild('csvReader') csvReader: any;
   private categorias: any = []; // Para guardar las categorias o la coordenada x
   private values: any = []; // Para guardar los valroes de las serie
-  
+
   //PARA CHARTSJS
   @ViewChild('myChart') private barCanvas: ElementRef;
   nominalComparisonChart: any;
@@ -26,7 +26,7 @@ export class TimeSeriesComponent implements OnInit {
       {
         label: '',
         data: [],
-        backgroundColor:'rgba(0, 143, 57)'
+        backgroundColor: 'rgba(0, 143, 57)'
       },
     ],
   };
@@ -40,7 +40,7 @@ export class TimeSeriesComponent implements OnInit {
   public d3Data: { year: String, Amount: number }[] = [];
 
   public svgInner;
-  public yScale;  
+  public yScale;
   public xScale;
   public xAxis;
   public yAxis;
@@ -91,7 +91,7 @@ export class TimeSeriesComponent implements OnInit {
           ],
         };
         toastData.categories = seriesName;
-        toastData.series[0].name = "%";
+        toastData.series[0].name = "Porcentaje de población que usan internet: ";
         toastData.series[0].data = this.values;
         //Creación del gráfico con Toast
         this.createGraphToast(toastData);
@@ -108,9 +108,9 @@ export class TimeSeriesComponent implements OnInit {
         //-------------------------------------------------------------------------------------
 
         //D3
-        this.margin = 120;
-        this.width = 1800;
-        this.height = 900;
+        this.margin = 50;
+        this.width = 1300;
+        this.height = 600;
         //Creación del gráfico con d3
         this.createSvg(seriesName);
         console.log(this.values);
@@ -132,11 +132,17 @@ export class TimeSeriesComponent implements OnInit {
 
   private createGraphChartsjs(data: any) {
 
-    Chart.register(LineController, LinearScale, CategoryScale, LineElement, PointElement);
+    Chart.register(LineController, LinearScale, CategoryScale, LineElement, PointElement, Title);
     this.nominalComparisonChart = new Chart(this.barCanvas.nativeElement, {
       type: "line",
       data: data,
       options: {
+        plugins: {
+          title: {
+            display: true,
+            text: 'Time Series - ChartsJS',
+          }
+        },
         scales: {
           y: {
             type: 'linear',
@@ -152,15 +158,12 @@ export class TimeSeriesComponent implements OnInit {
   createGraphToast(data: any) {
 
     const options = {
-      chart: { title: '24-hr Average Temperature', width: 1000, height: 500 },
+      chart: { title: 'Time Series - Toast', width: 1000, height: 500 },
       xAxis: {
-        title: 'Month',
+        title: 'Año',
       },
       yAxis: {
-        title: 'Amount',
-      },
-      tooltip: {
-        formatter: (value) => `${value}°C`,
+        title: 'Porcentaje de personas que usas internet',
       },
     };
 
@@ -169,15 +172,16 @@ export class TimeSeriesComponent implements OnInit {
   }
 
   private createSvg(SeriesName: string[]): void {
-    
+
     this.svg = d3
       .select("figure#imagen")
       .append('svg')
-      .attr('height', this.height);
+      .attr('height', this.height)
+      .attr('transform', "translate( 0 , " + this.margin / 2 + ")")
 
     this.svgInner = this.svg
       .append('g')
-      .style('transform', 'translate(' + this.margin + 'px, ' + this.margin + 'px)');
+      .style('transform', 'translate(0, ' + this.margin / 2 + 'px)');
 
     this.yScale = d3
       .scaleLinear()
@@ -189,7 +193,7 @@ export class TimeSeriesComponent implements OnInit {
       .attr('id', 'y-axis')
       .style('transform', 'translate(' + this.margin + 'px,  0)');
 
-    
+
     this.xScale = d3
       .scaleBand()
       .domain(SeriesName)
@@ -210,28 +214,34 @@ export class TimeSeriesComponent implements OnInit {
 
   }
 
- 
+
   private drawLine(): void {
     this.svg.attr('width', this.width);
 
     this.xScale.range([this.margin, this.width - 2 * this.margin]);
 
-  
-    const xAxis = d3
-      .axisBottom(this.xScale);
 
-    
-    this.xAxis.call(xAxis).
-    selectAll("text")
-    .attr("transform", "translate(-10,10)rotate(-45)")
-    .style("text-anchor", "end")
-    .style("font-size", 10)
-    .style("fill", "#69a3b2");
+    const xAxis = d3
+      .axisBottom(this.xScale)
+      .tickSize(-this.height);
+
+
+    this.xAxis.call(xAxis)
+      .call(g => g.selectAll(".tick:not(:first-of-type) line")
+        .attr("stroke", "grey"))
+      .selectAll("text")
+      .attr("transform", "translate(-10,10)rotate(-45)")
+      .style("text-anchor", "end")
+      ;
 
     const yAxis = d3
-      .axisLeft(this.yScale);
+      .axisLeft(this.yScale)
+      .ticks(10)
+      .tickSize(-this.width);
 
-    this.yAxis.call(yAxis);
+    this.yAxis.call(yAxis)
+      .call(g => g.selectAll(".tick:not(:first-of-type) line")
+        .attr("stroke", "grey"));
 
     const line = d3
       .line()
@@ -245,7 +255,30 @@ export class TimeSeriesComponent implements OnInit {
     ]);
 
     this.lineGroup.attr('d', line(points));
-    
+
+    //Añadiendo título al gráfico
+    this.svgInner.append("text")
+      .attr("x", this.width / 2)
+      .attr("y", 0)
+      .attr("text-anchor", "middle")
+      .style("font-size", "16px")
+      .text("Time Series - d3");
+
+    //Añadiendo título al eje Y
+    this.svgInner.append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 0)
+      .attr("x", (-this.height / 2 + this.margin))
+      .attr("dy", "1em")
+      .style("text-anchor", "middle")
+      .text("Porcentaje de personas que usan internet");
+
+    //Añadiendo título al eje X
+    this.svgInner.append("text")
+      .attr("transform", "translate(" + this.width / 2 + "," + (this.height - this.margin) + ")")
+      .style("text-anchor", "middle")
+      .text("Año");
+
   }
 
 
@@ -256,12 +289,12 @@ export class TimeSeriesComponent implements OnInit {
     let value: any;
 
     let cabecera = (<string>csvRecordsArray[0]).split(',');
-    
+
 
     for (let i = 1; i < csvRecordsArray.length && !encontrado; i++) {
       let currentRecord = (<string>csvRecordsArray[i]).split(',');
       if (currentRecord[0] === "\"Mundo") {
-       
+
         for (let j = 4; j < currentRecord.length - 4; j++) {
           let Amount = Number(parseFloat(currentRecord[j].trim().replace(/[""]+/g, '')).toFixed(2));
           if (isNaN(parseFloat(currentRecord[j].trim().replace(/[""]+/g, '')))) {
@@ -269,13 +302,13 @@ export class TimeSeriesComponent implements OnInit {
           }
           this.values.push(Amount);
           let year = cabecera[j].trim().replace(/[""]+/g, '');
-          this.d3Data.push({year, Amount})
+          this.d3Data.push({ year, Amount })
         }
         encontrado = true; //Para que no siga buscando cuando encuentre Mundo
       }
     }
     console.log(this.d3Data);
-   
+
   }
 
   getDataRecordsArrayFromCSVFile(csvRecordsArray: any) {
@@ -309,7 +342,7 @@ export class TimeSeriesComponent implements OnInit {
   getHeaderArray(csvRecordsArr: any) {
     let headers = (<string>csvRecordsArr[0]).split('\",');
     let headerArray = [];
-    for (let j = 1; j < headers.length; j++) {
+    for (let j = 1; j < headers.length - 4; j++) {
       headerArray.push(headers[j]);
     }
     return headerArray;

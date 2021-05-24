@@ -1,6 +1,6 @@
 import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ColumnChart } from '@toast-ui/chart';
-import { BarController, BarElement, CategoryScale, Chart, LinearScale } from 'chart.js';
+import { BarController, BarElement, CategoryScale, Chart, LinearScale, Title } from 'chart.js';
 import * as d3 from 'd3';
 
 @Component({
@@ -26,7 +26,7 @@ export class NominalComparisonComponent implements OnInit {
       {
         label: '',
         data: [],
-        backgroundColor:'rgba(0, 143, 57)'
+        backgroundColor: 'rgba(0, 143, 57)'
       }
     ],
   };
@@ -46,14 +46,6 @@ export class NominalComparisonComponent implements OnInit {
 
   ngOnInit(): void {
 
-    var prueba = [
-      {item: "Soup", votes: 4},
-      {item: "Cake", votes: 5},
-      {item: "Cabbage", votes: 1},
-      {item: "Ice Cream", votes: 4}
-    ];
-    prueba.sort((a,b) => d3.ascending(a.votes, b.votes));
-    console.log(prueba)
   }
 
   uploadListener($event: any): void {
@@ -80,7 +72,7 @@ export class NominalComparisonComponent implements OnInit {
         let headersRow = this.getHeaderArray(csvRecordsArray);
 
         //Saca el nombre de la serie que vamos a representar
-        seriesName = headersRow[27].trim().replace(/['"]+/g, ''); 
+        seriesName = headersRow[27].trim().replace(/['"]+/g, '');
 
         //Cargamos los datos que se van a representar en las gráficas
         this.getDataRecordsArrayFromCSVFile(csvRecordsArray);
@@ -97,7 +89,7 @@ export class NominalComparisonComponent implements OnInit {
           ],
         };
         toastData.categories = this.categorias;
-        toastData.series[0].name = seriesName;
+        toastData.series[0].name = "Porcentaje de infectados que fallecen:";
         toastData.series[0].data = this.values;
         //Creación del gráfico con Toast
         this.createGraphToast(toastData);
@@ -115,11 +107,11 @@ export class NominalComparisonComponent implements OnInit {
 
         //D3
         this.margin = 120;
-        this.width = 3000 ;
-        this.height = 400 ;
+        this.width = 3000;
+        this.height = 400;
         //Creación del gráfico con d3
         this.createSvg();
-        this.drawBars(this.d3Data.sort((a,b) => d3.descending(a.death, b.death)));
+        this.drawBars(this.d3Data.sort((a, b) => d3.descending(a.death, b.death)));
 
         reader.onerror = function () {
           console.log('error is occured while reading file!');
@@ -134,11 +126,17 @@ export class NominalComparisonComponent implements OnInit {
 
   private createGraphChartsjs(data: any) {
 
-    Chart.register(BarController, LinearScale, CategoryScale, BarElement);
+    Chart.register(BarController, LinearScale, CategoryScale, BarElement, Title);
     this.nominalComparisonChart = new Chart(this.barCanvas.nativeElement, {
       type: "bar",
       data: data,
       options: {
+        plugins: {
+          title: {
+            display: true,
+            text: 'Nominal Comparison - ChartsJS',
+          }
+        },
         scales: {
           y: {
             type: 'linear',
@@ -153,9 +151,15 @@ export class NominalComparisonComponent implements OnInit {
 
     const options = {
       chart: { title: '', width: 500, height: 500 },
+      xAxis: {
+        title: 'Países del mundo',
+      },
+      yAxis: {
+        title: 'Porcentaje de infectados que fallecen',
+      },
     };
 
-    options.chart.title = "Toast nominal comparison";
+    options.chart.title = "Nominal Comparison - Toast";
     options.chart.width = 65 * data.series[0].data.length;
 
     const el = document.getElementById('grafica');
@@ -175,8 +179,8 @@ export class NominalComparisonComponent implements OnInit {
   }
 
   private drawBars(data: any[]): void {
-    // Create the X-axis band scale
 
+    // Create the X-axis band scale
     const x = d3.scaleBand()
       .range([0, this.width])
       .domain(data.map(d => d.country))
@@ -185,7 +189,10 @@ export class NominalComparisonComponent implements OnInit {
     // Draw the X-axis on the DOM
     this.svg.append("g")
       .attr("transform", "translate(0," + this.height + ")")
-      .call(d3.axisBottom(x))
+      .call(d3.axisBottom(x)
+        .tickSize(-this.height))
+      .call(g => g.selectAll(".tick:not(:first-of-type) line")
+        .attr("stroke", "grey"))
       .selectAll("text")
       .attr("transform", "translate(-10,0)rotate(-45)")
       .style("text-anchor", "end");
@@ -197,7 +204,12 @@ export class NominalComparisonComponent implements OnInit {
 
     // Draw the Y-axis on the DOM
     this.svg.append("g")
-      .call(d3.axisLeft(y));
+      .attr("class", "grid")
+      .call(d3.axisLeft(y)
+        .ticks(10)
+        .tickSize(-this.width))
+      .call(g => g.selectAll(".tick:not(:first-of-type) line")
+        .attr("stroke", "grey"));
 
     // Create and fill the bars
     this.svg.selectAll("bars")
@@ -209,6 +221,64 @@ export class NominalComparisonComponent implements OnInit {
       .attr("width", x.bandwidth())
       .attr("height", (d) => this.height - y(d.death))
       .attr("fill", "#d04a35");
+
+
+
+
+    /* // gridlines in x axis function
+     function make_x_gridlines() {
+       return d3.axisBottom(x)
+         .ticks(20)
+     }
+ 
+     // gridlines in y axis function
+     function make_y_gridlines() {
+       return d3.axisLeft(y)
+         .ticks(20)
+     }
+ 
+     // add the X gridlines
+     this.svg.append("g")
+       .attr("class", "grid")
+       .attr("transform", "translate(0," + this.height + ")")
+       .call(make_x_gridlines()
+         .tickSize(-this.height)
+       )
+ 
+     // add the Y gridlines
+     this.svg.append("g")
+       .attr("class", "grid")
+       .call(make_y_gridlines()
+         .tickSize(-this.width)
+       )*/
+
+
+
+
+
+    //Añadiendo título al gráfico
+    this.svg.append("text")
+      .attr("x", (this.width / 20))
+      .attr("y", 0 - (this.margin / 2))
+      .attr("text-anchor", "middle")
+      .style("font-size", "16px")
+      .text("Nominal Comparison - d3");
+
+    //Añadiendo título al eje Y
+    this.svg.append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 0 - this.margin / 2)
+      .attr("x", 0 - (this.height / 2))
+      .attr("dy", "1em")
+      .style("text-anchor", "middle")
+      .text("Porcentaje de infectados que fallecen");
+
+    //Añadiendo título al eje X
+    this.svg.append("text")
+      .attr("transform", "translate(" + (this.width / 2) + " ," + (this.height + this.margin) + ")")
+      .style("text-anchor", "middle")
+      .text("Países del mundo");
+
   }
 
   d3getDataRecordsArrayFromCSVFile(csvRecordsArray: any) {
@@ -247,9 +317,9 @@ export class NominalComparisonComponent implements OnInit {
       } else {
         aux = 0;
       }
-      this.values.push(aux);
+      this.values.push(aux.toFixed(2));
     }
-    
+
 
   }
 

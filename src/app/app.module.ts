@@ -12,6 +12,7 @@ import { CorrelationComponent } from './correlation/correlation.component';
 import { DistributionComponent } from './distribution/distribution.component';
 import { TimeSeriesComponent } from './time-series/time-series.component';
 import { DeviationComponent } from './deviation/deviation.component';
+import { HomeComponent } from './home/home.component';
 
 
 //toast components
@@ -24,6 +25,7 @@ const routes: Routes = [
   { path: 'distribution', component: DistributionComponent },
   { path: 'timeSeries', component: TimeSeriesComponent },
   { path: 'deviation', component: DeviationComponent },
+  { path: '', component: HomeComponent },
 
 ]
 
@@ -36,6 +38,7 @@ const routes: Routes = [
     DistributionComponent,
     TimeSeriesComponent,
     DeviationComponent,
+    HomeComponent,
   ],
   imports: [
     BrowserModule,

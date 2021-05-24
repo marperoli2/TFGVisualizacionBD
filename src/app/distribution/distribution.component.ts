@@ -21,7 +21,7 @@ export class DistributionComponent implements OnInit {
 
   ngOnInit(): void {
 
-   
+
   }
 
   uploadListener($event: any): void {
@@ -48,21 +48,21 @@ export class DistributionComponent implements OnInit {
         let headersRow = this.getHeaderArray(csvRecordsArray);
 
         //Saca el nombre de la serie que vamos a representar
-        seriesName = headersRow[27].trim().replace(/['"]+/g, ''); 
+        seriesName = headersRow[27].trim().replace(/['"]+/g, '');
 
         //Cargamos los datos que se van a representar en las gráficas
         this.getDataRecordsArrayFromCSVFile(csvRecordsArray);
 
         var el = document.createElement('div')
         document.body.appendChild(el);
-      
+
         /*for (var d = 0; d < 1000; d += 1) {
           data.push({
             a: Math.sqrt(-2*Math.log(Math.random()))*Math.cos(2*Math.PI*Math.random())
           });
         }*/
-    
-      
+
+
         var vis = new candela.components.Histogram(el, {
           data: this.values,
           x: 'deaths',
@@ -79,16 +79,16 @@ export class DistributionComponent implements OnInit {
         }
 
         var bin1 = d3.bin();
-        var bin2 = d3.bin().thresholds([ 0, 0.04, 0.08]);
-        var mybuc = bin2(myValues);
-      
-        var margin = { top: 20, right: 30, bottom: 30, left: 50 },
+        var bin2 = d3.bin().thresholds([0, 0.04, 0.08]);
+        var mybuc = bin1(myValues);
+
+        var margin = { top: 50, right: 30, bottom: 50, left: 60 },
           width = 530 - margin.left - margin.right,
           height = 280 - margin.top - margin.bottom;
 
-        var max = (Math.trunc(d3.max(myValues)/0.02)+1)*0.02;   
+        var max = (Math.trunc(d3.max(myValues) / 0.02) + 1) * 0.02;
         var min = d3.min(myValues);
-        
+
         this.svg = d3.select("#histogram3d")
           .append("svg")
           .attr("width", width + margin.left + margin.right)
@@ -104,15 +104,20 @@ export class DistributionComponent implements OnInit {
         // Draw the X-axis on the DOM
         this.svg.append('g')
           .attr('transform', 'translate(0,' + height + ')')
-          .call(d3.axisBottom(x));
+          .call(d3.axisBottom(x)
+            .tickSize(-height))
+          .call(g => g.selectAll(".tick:not(:first-of-type) line")
+            .attr("stroke", "grey"));
 
         var y = d3.scaleLinear()
-          .domain([0,100 ])
-          .range([height,0]);
+          .domain([0, 100])
+          .range([height, 0]);
 
         this.svg.append('g')
-          .call(d3.axisLeft(y))
-          ;
+          .call(d3.axisLeft(y)
+            .tickSize(-width))
+          .call(g => g.selectAll(".tick:not(:first-of-type) line")
+            .attr("stroke", "grey"));;
 
         this.svg.selectAll("rect")
           .data(mybuc)
@@ -120,74 +125,83 @@ export class DistributionComponent implements OnInit {
           .append("rect")
           .attr("x", 1)
           .attr("transform", function (d) { return "translate(" + x(d.x0) + "," + y(d.length) + ")"; })
-          .attr("width", function(d) { return x(d.x1) - x(d.x0) -1 ; })
-          .attr("height", function(d) { return height - y(d.length); })
+          .attr("width", function (d) { return x(d.x1) - x(d.x0) - 1; })
+          .attr("height", function (d) { return height - y(d.length); })
           .style("fill", "#69b3a2");
 
-        /*this.svg = d3.select("#histogram3d").append("g")
-                  .selectAll("rect")
-                  .data(mybuc)
-                  .join("rect")
-                  .attr("y", d => 10)
-                  .attr("height", 100 - 2 * 10)
-                  .attr("x", d => (x(d.x0) + 1) | 0)
-                  .attr("width", d => (x(d.x1) | 0) - (x(d.x0) | 0) - 2)
-                  .attr("stroke-width", 1)
-                  .attr("stroke-dasharray", d => (d.length === 0 ? "1 5" : null))
-                  .attr("fill", "none");
-                console.log("fin");
-        
-        */
-      
+        //Añadiendo título al gráfico
+        this.svg.append("text")
+          .attr("x", margin.left)
+          .attr("y", -10)
+          .attr("text-anchor", "middle")
+          .style("font-size", "16px")
+          .text("Distribution - d3");
+
+        //Añadiendo título al eje Y
+        this.svg.append("text")
+          .attr("transform", "rotate(-90)")
+          .attr("y", 0 - margin.left / 1.3)
+          .attr("x", 0 - (height / 2))
+          .attr("dy", "1em")
+          .style("text-anchor", "middle")
+          .text("Número de países");
+
+        //Añadiendo título al eje X
+        this.svg.append("text")
+          .attr("transform", "translate(" + (width / 2) + " ," + (height + margin.bottom / 1.5) + ")")
+          .style("text-anchor", "middle")
+          .text("Intervalos sobre porcentajes de obesidad");
+
+
       }
     } else {
       alert("Please import valid .csv file.");
       this.fileReset();
     }
-  
-}
 
-getDataRecordsArrayFromCSVFile(csvRecordsArray: any) {
+  }
 
-  let deaths;
+  getDataRecordsArrayFromCSVFile(csvRecordsArray: any) {
 
-  for (let i = 1; i < csvRecordsArray.length; i++) {
-    let currentRecord = (<string>csvRecordsArray[i]).split(',');
+    let deaths;
+
+    for (let i = 1; i < csvRecordsArray.length; i++) {
+      let currentRecord = (<string>csvRecordsArray[i]).split(',');
 
 
-    if (!isNaN(parseFloat(currentRecord[27]))) {
-      deaths = parseFloat(currentRecord[27].trim().replace(/['"]+/g, ''));
-    } else {
-      deaths = 0;
+      if (!isNaN(parseFloat(currentRecord[27]))) {
+        deaths = parseFloat(currentRecord[27].trim().replace(/['"]+/g, ''));
+      } else {
+        deaths = 0;
+      }
+      this.values.push({ deaths });
     }
-    this.values.push({deaths});
+
+    console.log(this.values)
+
+
   }
 
-  console.log(this.values)
-  
-
-}
-
-isValidCSVFile(file: any) {
-  return file.name.endsWith(".csv");
-}
-
-getHeaderArray(csvRecordsArr: any) {
-  let headers = (<string>csvRecordsArr[0]).split('\",');
-  let headerArray = [];
-  for (let j = 0; j < headers.length; j++) {
-    headerArray.push(headers[j]);
+  isValidCSVFile(file: any) {
+    return file.name.endsWith(".csv");
   }
-  return headerArray;
-}
 
-fileReset() {
-  this.csvReader.nativeElement.value = "";
-  this.categorias = [];
-  this.values = [];
-}
+  getHeaderArray(csvRecordsArr: any) {
+    let headers = (<string>csvRecordsArr[0]).split('\",');
+    let headerArray = [];
+    for (let j = 0; j < headers.length; j++) {
+      headerArray.push(headers[j]);
+    }
+    return headerArray;
+  }
+
+  fileReset() {
+    this.csvReader.nativeElement.value = "";
+    this.categorias = [];
+    this.values = [];
+  }
 
 
-  
+
 
 }
