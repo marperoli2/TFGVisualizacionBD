@@ -209,6 +209,20 @@ export class CorrelationComponent implements OnInit {
             text: 'Correlation - ChartsJS',
           }
         },
+        scales: {
+          y: {
+            title: {
+              display: true,
+              text: 'Porcentaje de muertes por covid en personas infectadas',
+            },
+          },
+          x: {
+            title: {
+              display: true,
+              text: 'Porcentaje de población con obesidad',
+            },
+          }
+        }
       }
     }
     );

@@ -146,7 +146,17 @@ export class TimeSeriesComponent implements OnInit {
         scales: {
           y: {
             type: 'linear',
-            beginAtZero: true
+            beginAtZero: true,
+            title: {
+              display: true,
+              text: 'Porcentaje de personas que usas internet',
+            },
+          },
+          x: {
+            title: {
+              display: true,
+              text: 'Año',
+            },
           }
         }
       }

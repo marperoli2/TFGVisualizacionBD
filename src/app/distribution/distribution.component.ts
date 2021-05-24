@@ -131,7 +131,7 @@ export class DistributionComponent implements OnInit {
 
         //Añadiendo título al gráfico
         this.svg.append("text")
-          .attr("x", margin.left)
+          .attr("x", width/2)
           .attr("y", -10)
           .attr("text-anchor", "middle")
           .style("font-size", "16px")

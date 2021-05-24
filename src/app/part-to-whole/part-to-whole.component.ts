@@ -136,11 +136,18 @@ export class PartToWholeComponent implements OnInit {
         scales: {
           x: {
             title: {
-              text: "hola"
+              display: true,
+              text: 'Porcentaje de consumo en España',
             },
             type: 'linear',
             beginAtZero: true,
           },
+          y:{
+            title: {
+              display: true,
+              text: 'Tipo de alimentos',
+            },
+          }
         }
       }
     });

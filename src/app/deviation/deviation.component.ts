@@ -133,7 +133,17 @@ export class DeviationComponent implements OnInit {
         scales: {
           y: {
             type: 'linear',
-            beginAtZero: true
+            beginAtZero: true,
+            title: {
+              display: true,
+              text: 'Porcentaje de diferencia Bélgica - España',
+            },
+          },
+          x:{
+            title: {
+              display: true,
+              text: 'Tipo de alimentos',
+            },
           }
         }
       }

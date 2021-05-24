@@ -139,8 +139,18 @@ export class NominalComparisonComponent implements OnInit {
         },
         scales: {
           y: {
+            title: {
+              display: true,
+              text: 'Porcentaje de infectados que fallecen',
+            },
             type: 'linear',
-            beginAtZero: true
+            beginAtZero: true,
+          },
+          x: {
+            title: {
+              display: true,
+              text: 'Paises del mundo'
+            }
           }
         }
       }
