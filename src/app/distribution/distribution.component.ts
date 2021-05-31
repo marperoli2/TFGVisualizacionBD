@@ -13,7 +13,8 @@ export class DistributionComponent implements OnInit {
 
   @ViewChild('csvReader') csvReader: any;
   private categorias: any = []; // Para guardar las categorias o la coordenada x
-  private values: any = []; // Para guardar los valroes de las serie
+  private values: any = []; // Para guardar los valroes de las serie7
+  private values3d: any = [];
 
   private svg: any;
 
@@ -56,16 +57,9 @@ export class DistributionComponent implements OnInit {
         var el = document.createElement('div')
         document.body.appendChild(el);
 
-        /*for (var d = 0; d < 1000; d += 1) {
-          data.push({
-            a: Math.sqrt(-2*Math.log(Math.random()))*Math.cos(2*Math.PI*Math.random())
-          });
-        }*/
-
-
         var vis = new candela.components.Histogram(el, {
           data: this.values,
-          x: 'deaths',
+          x: 'Intervalos sobre porcentajes de obesidad',
           width: 700,
           height: 400
         });
@@ -74,8 +68,8 @@ export class DistributionComponent implements OnInit {
         //---------------------------------------------------------------------------------------------------------
 
         var myValues = [];
-        for (let i = 0; i < this.values.length; i++) {
-          myValues.push(this.values[i].deaths);
+        for (let i = 0; i < this.values3d.length; i++) {
+          myValues.push(this.values3d[i].deaths);
         }
 
         var bin1 = d3.bin();
@@ -174,10 +168,10 @@ export class DistributionComponent implements OnInit {
       } else {
         deaths = 0;
       }
-      this.values.push({ deaths });
+      this.values.push({ "Intervalos sobre porcentajes de obesidad":deaths });
+      this.values3d.push({deaths});
     }
 
-    console.log(this.values)
 
 
   }

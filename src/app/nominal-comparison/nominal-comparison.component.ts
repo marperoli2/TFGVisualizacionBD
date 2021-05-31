@@ -134,7 +134,7 @@ export class NominalComparisonComponent implements OnInit {
         plugins: {
           title: {
             display: true,
-            text: 'Nominal Comparison - ChartsJS',
+            text: 'Nominal Comparison & Ranking - ChartsJS',
           }
         },
         scales: {
@@ -169,7 +169,7 @@ export class NominalComparisonComponent implements OnInit {
       },
     };
 
-    options.chart.title = "Nominal Comparison - Toast";
+    options.chart.title = "Nominal Comparison & Ranking - Toast";
     options.chart.width = 65 * data.series[0].data.length;
 
     const el = document.getElementById('grafica');
@@ -272,7 +272,7 @@ export class NominalComparisonComponent implements OnInit {
       .attr("y", 0 - (this.margin / 2))
       .attr("text-anchor", "middle")
       .style("font-size", "16px")
-      .text("Nominal Comparison - d3");
+      .text("Nominal Comparison & Ranking - d3");
 
     //Añadiendo título al eje Y
     this.svg.append("text")
