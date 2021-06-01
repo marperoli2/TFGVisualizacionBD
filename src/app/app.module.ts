@@ -4,8 +4,8 @@ import { RouterModule, Routes } from '@angular/router';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { HttpClientModule } from '@angular/common/http';
 
-//d3 components
 import { PartToWholeComponent } from './part-to-whole/part-to-whole.component';
 import { NominalComparisonComponent } from './nominal-comparison/nominal-comparison.component';
 import { CorrelationComponent } from './correlation/correlation.component';
@@ -13,9 +13,6 @@ import { DistributionComponent } from './distribution/distribution.component';
 import { TimeSeriesComponent } from './time-series/time-series.component';
 import { DeviationComponent } from './deviation/deviation.component';
 import { HomeComponent } from './home/home.component';
-
-
-//toast components
 
 const routes: Routes = [
 
@@ -44,7 +41,7 @@ const routes: Routes = [
     BrowserModule,
     AppRoutingModule,
     RouterModule.forRoot(routes),
-
+    HttpClientModule
   ],
   providers: [],
   bootstrap: [AppComponent]

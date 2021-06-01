@@ -2,6 +2,12 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { LineChart } from '@toast-ui/chart';
 import { Chart, LineController, LinearScale, CategoryScale, LineElement, PointElement, Title } from 'chart.js';
 import * as d3 from 'd3';
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+
+@Injectable({
+  providedIn: 'root'
+})
 
 @Component({
   selector: 'app-time-series',
@@ -10,7 +16,7 @@ import * as d3 from 'd3';
 })
 export class TimeSeriesComponent implements OnInit {
 
-  constructor() { }
+  public d3DatacsvData: string;
 
   //PARA TOAST
   @ViewChild('csvReader') csvReader: any;
@@ -46,88 +52,83 @@ export class TimeSeriesComponent implements OnInit {
   public yAxis;
   public lineGroup;
 
+  constructor(private http: HttpClient) {
+    this.http.get('assets/internet.csv', { responseType: 'text' })
+      .subscribe(
+        data => {
+          this.d3DatacsvData = data;
+          this.allGraphs();
+
+        },
+        error => {
+          console.log(error);
+        }
+
+      );
+  }
+
   ngOnInit(): void {
   }
 
-  uploadListener($event: any): void {
+  private allGraphs() {
 
     let text = [];
 
     let seriesName = [];  // Para guardar el nombre de la serie
 
-    let files = $event.srcElement.files;
+    let csvRecordsArray = (<String>this.d3DatacsvData).split(/\r\n|\n/);
 
-    if (this.isValidCSVFile(files[0])) {
+    let headersRow = this.getHeaderArray(csvRecordsArray);
 
-      let input = $event.target;
-      let reader = new FileReader();
-      reader.readAsText(input.files[0]);
+    for (let i = 2; i < headersRow.length; i++) {
+      seriesName.push(headersRow[i].trim().replace(/['"]+/g, ''));
+    } //para quitar dobles comillas con las que sale del csv
 
-      reader.onload = () => {
+    console.log(headersRow)
+    console.log(seriesName)
 
-        let csvData = reader.result;
-        let csvRecordsArray = (<String>csvData).split(/\r\n|\n/);
+    this.getDataRecordsArrayFromCSVFile(csvRecordsArray);
+    this.d3getDataRecordsArrayFromCSVFile(csvRecordsArray, headersRow); //Hace falta el nombre de la cabecera para las series ({Cabecera:Value})
 
-        let headersRow = this.getHeaderArray(csvRecordsArray);
+    //TOAST
+    const toastData = {
+      categories: [],
+      series: [
+        {
+          name: '',
+          data: [],
+        },
+      ],
+    };
+    toastData.categories = seriesName;
+    toastData.series[0].name = "Porcentaje de población que usan internet: ";
+    toastData.series[0].data = this.values;
+    //Creación del gráfico con Toast
+    this.createGraphToast(toastData);
 
-        for (let i = 2; i < headersRow.length; i++) {
-          seriesName.push(headersRow[i].trim().replace(/['"]+/g, ''));
-        } //para quitar dobles comillas con las que sale del csv
+    //-------------------------------------------------------------------------------------
 
-        console.log(headersRow)
-        console.log(seriesName)
+    //CHARTSJS
+    this.chartsjsData.labels = seriesName;
+    this.chartsjsData.datasets[0].label = "%";
+    this.chartsjsData.datasets[0].data = this.values;
+    //Creación del gráfico con Chartsjs
+    this.createGraphChartsjs(this.chartsjsData);
 
-        this.getDataRecordsArrayFromCSVFile(csvRecordsArray);
-        this.d3getDataRecordsArrayFromCSVFile(csvRecordsArray, headersRow); //Hace falta el nombre de la cabecera para las series ({Cabecera:Value})
+    //-------------------------------------------------------------------------------------
 
-        //TOAST
-        const toastData = {
-          categories: [],
-          series: [
-            {
-              name: '',
-              data: [],
-            },
-          ],
-        };
-        toastData.categories = seriesName;
-        toastData.series[0].name = "Porcentaje de población que usan internet: ";
-        toastData.series[0].data = this.values;
-        //Creación del gráfico con Toast
-        this.createGraphToast(toastData);
+    //D3
+    this.margin = 50;
+    this.width = 1300;
+    this.height = 600;
+    //Creación del gráfico con d3
+    this.createSvg(seriesName);
+    console.log(this.values);
 
-        //-------------------------------------------------------------------------------------
+    console.log("antes")
+    this.drawLine();
+    console.log(this.d3Data)
 
-        //CHARTSJS
-        this.chartsjsData.labels = seriesName;
-        this.chartsjsData.datasets[0].label = "%";
-        this.chartsjsData.datasets[0].data = this.values;
-        //Creación del gráfico con Chartsjs
-        this.createGraphChartsjs(this.chartsjsData);
-
-        //-------------------------------------------------------------------------------------
-
-        //D3
-        this.margin = 50;
-        this.width = 1300;
-        this.height = 600;
-        //Creación del gráfico con d3
-        this.createSvg(seriesName);
-        console.log(this.values);
-
-        console.log("antes")
-        this.drawLine();
-        console.log(this.d3Data)
-
-        reader.onerror = function () {
-          console.log('error is occured while reading file!');
-        };
-      };
-
-    } else {
-      alert("Please import valid .csv file.");
-      this.fileReset();
-    }
   }
 
   private createGraphChartsjs(data: any) {

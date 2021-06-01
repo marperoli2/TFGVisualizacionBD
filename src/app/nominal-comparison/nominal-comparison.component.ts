@@ -2,6 +2,12 @@ import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angula
 import { BarChart, ColumnChart } from '@toast-ui/chart';
 import { BarController, BarElement, CategoryScale, Chart, LinearScale, Title } from 'chart.js';
 import * as d3 from 'd3';
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+
+@Injectable({
+  providedIn: 'root'
+})
 
 @Component({
   selector: 'app-nominal-comparison',
@@ -10,7 +16,7 @@ import * as d3 from 'd3';
 })
 export class NominalComparisonComponent implements OnInit {
 
-  constructor() { }
+  public csvData: string;
 
   //PARA TOAST
   @ViewChild('csvReader') csvReader: any;
@@ -43,85 +49,80 @@ export class NominalComparisonComponent implements OnInit {
   @ViewChild('csvReader') csvReaderd3: any;
   private d3Data: any[] = [];
 
+  constructor(private http: HttpClient) {
+    this.http.get('assets/alimentos.csv', { responseType: 'text' })
+      .subscribe(
+        data => {
+          this.csvData = data;
+          this.allGraphs();
+
+        },
+        error => {
+          console.log(error);
+        }
+
+      );
+  }
+
 
   ngOnInit(): void {
 
   }
 
-  uploadListener($event: any): void {
+  private allGraphs() {
 
     let text = [];
 
     let seriesName = "";  // Para guardar el nombre de la serie
     let myheader = [];  // Las cabeceras que interesan el fichero csv
 
-    let files = $event.srcElement.files;
+    let csvRecordsArray = (<String>this.csvData).split(/\r\n|\n/);
+
+    let headersRow = this.getHeaderArray(csvRecordsArray);
+
+    //Saca el nombre de la serie que vamos a representar
+    seriesName = headersRow[27].trim().replace(/['"]+/g, '');
+
+    //Cargamos los datos que se van a representar en las gráficas
+    this.getDataRecordsArrayFromCSVFile(csvRecordsArray);
+    this.d3getDataRecordsArrayFromCSVFile(csvRecordsArray);
+
+    //TOAST
+    const toastData = {
+      categories: [],
+      series: [
+        {
+          name: '',
+          data: [],
+        },
+      ],
+    };
+    toastData.categories = this.categorias;
+    toastData.series[0].name = "Porcentaje de infectados que fallecen:";
+    toastData.series[0].data = this.values;
+    //Creación del gráfico con Toast
+    this.createGraphToast(toastData);
+
+    //-------------------------------------------------------------------------------------
+
+    //CHARTSJS
+    this.chartsjsData.labels = this.categorias;
+    this.chartsjsData.datasets[0].label = seriesName;
+    this.chartsjsData.datasets[0].data = this.values;
+    //Creación del gráfico con Chartsjs
+    this.createGraphChartsjs(this.chartsjsData);
+
+    //-------------------------------------------------------------------------------------
+
+    //D3
+    this.margin = 120;
+    this.width = 3000;
+    this.height = 400;
+    //Creación del gráfico con d3
+    this.createSvg();
+    this.drawBars(this.d3Data.sort((a, b) => d3.descending(a.death, b.death)));
 
 
-    if (this.isValidCSVFile(files[0])) {
-
-      let input = $event.target;
-      let reader = new FileReader();
-      reader.readAsText(input.files[0]);
-
-      reader.onload = () => {
-
-        let csvData = reader.result;
-        let csvRecordsArray = (<String>csvData).split(/\r\n|\n/);
-
-        let headersRow = this.getHeaderArray(csvRecordsArray);
-
-        //Saca el nombre de la serie que vamos a representar
-        seriesName = headersRow[27].trim().replace(/['"]+/g, '');
-
-        //Cargamos los datos que se van a representar en las gráficas
-        this.getDataRecordsArrayFromCSVFile(csvRecordsArray);
-        this.d3getDataRecordsArrayFromCSVFile(csvRecordsArray);
-
-        //TOAST
-        const toastData = {
-          categories: [],
-          series: [
-            {
-              name: '',
-              data: [],
-            },
-          ],
-        };
-        toastData.categories = this.categorias;
-        toastData.series[0].name = "Porcentaje de infectados que fallecen:";
-        toastData.series[0].data = this.values;
-        //Creación del gráfico con Toast
-        this.createGraphToast(toastData);
-
-        //-------------------------------------------------------------------------------------
-
-        //CHARTSJS
-        this.chartsjsData.labels = this.categorias;
-        this.chartsjsData.datasets[0].label = seriesName;
-        this.chartsjsData.datasets[0].data = this.values;
-        //Creación del gráfico con Chartsjs
-        this.createGraphChartsjs(this.chartsjsData);
-
-        //-------------------------------------------------------------------------------------
-
-        //D3
-        this.margin = 120;
-        this.width = 3000;
-        this.height = 400;
-        //Creación del gráfico con d3
-        this.createSvg();
-        this.drawBars(this.d3Data.sort((a, b) => d3.descending(a.death, b.death)));
-
-        reader.onerror = function () {
-          console.log('error is occured while reading file!');
-        };
-      };
-
-    } else {
-      alert("Please import valid .csv file.");
-      this.fileReset();
-    }
   }
 
   private createGraphChartsjs(data: any) {
@@ -302,10 +303,6 @@ export class NominalComparisonComponent implements OnInit {
 
   }
 
-  isValidCSVFile(file: any) {
-    return file.name.endsWith(".csv");
-  }
-
   getHeaderArray(csvRecordsArr: any) {
     let headers = (<string>csvRecordsArr[0]).split('\",');
     let headerArray = [];
@@ -314,12 +311,5 @@ export class NominalComparisonComponent implements OnInit {
     }
     return headerArray;
   }
-
-  fileReset() {
-    this.csvReader.nativeElement.value = "";
-    this.categorias = [];
-    this.values = [];
-  }
-
 
 }

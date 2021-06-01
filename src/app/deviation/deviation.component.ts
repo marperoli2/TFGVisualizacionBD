@@ -2,6 +2,12 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ColumnChart } from '@toast-ui/chart';
 import { BarController, BarElement, CategoryScale, Chart, LinearScale, Title } from 'chart.js';
 import * as d3 from 'd3';
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+
+@Injectable({
+  providedIn: 'root'
+})
 
 @Component({
   selector: 'app-deviation',
@@ -10,7 +16,7 @@ import * as d3 from 'd3';
 })
 export class DeviationComponent implements OnInit {
 
-  constructor() { }
+  public csvData: string;
 
   //PARA TOAST
   @ViewChild('csvReader') csvReader: any;
@@ -41,80 +47,74 @@ export class DeviationComponent implements OnInit {
   @ViewChild('csvReader') csvReaderd3: any;
   private d3Data: any[] = [];
 
+  constructor(private http: HttpClient) {
+    this.http.get('assets/alimentos.csv', { responseType: 'text' })
+      .subscribe(
+        data => {
+          this.csvData = data;
+          this.allGraphs();
+
+        },
+        error => {
+          console.log(error);
+        }
+
+      );
+  }
+
   ngOnInit(): void {
   }
 
-  uploadListener($event: any): void {
+
+  private allGraphs() {
 
     let text = [];
 
     let seriesName = [];  // Para guardar el nombre de la serie
 
-    let files = $event.srcElement.files;
+    let csvRecordsArray = (<String>this.csvData).split(/\r\n|\n/);
 
-    if (this.isValidCSVFile(files[0])) {
+    let headersRow = this.getHeaderArray(csvRecordsArray);
 
-      let input = $event.target;
-      let reader = new FileReader();
-      reader.readAsText(input.files[0]);
+    for (let i = 0; i < headersRow.length; i++) {
+      seriesName.push(headersRow[i].trim().replace(/['"]+/g, ''));
+    } //para quitar dobles comillas con las que sale del csv7
 
-      reader.onload = () => {
+    this.getDataRecordsArrayFromCSVFile(csvRecordsArray);
+    this.d3getDataRecordsArrayFromCSVFile(csvRecordsArray, headersRow); //Hace falta el nombre de la cabecera para las series ({Cabecera:Value})
 
-        let csvData = reader.result;
-        let csvRecordsArray = (<String>csvData).split(/\r\n|\n/);
+    //TOAST
+    const toastData = {
+      categories: [],
+      series: [
+        {
+          name: '',
+          data: [],
+        },
+      ],
+    };
+    toastData.categories = seriesName;
+    toastData.series[0].name = "Porcenataje de diferencia Bélgica - España: ";
+    toastData.series[0].data = this.values;
+    //Creación del gráfico con Toast
+    this.createGraphToast(toastData);
 
-        let headersRow = this.getHeaderArray(csvRecordsArray);
+    //-------------------------------------------------------------------------------------
 
-        for (let i = 0; i < headersRow.length; i++) {
-          seriesName.push(headersRow[i].trim().replace(/['"]+/g, ''));
-        } //para quitar dobles comillas con las que sale del csv7
+    //CHARTSJS
+    this.chartsjsData.labels = seriesName;
+    this.chartsjsData.datasets[0].label = "%";
+    this.chartsjsData.datasets[0].data = this.values;
+    //Creación del gráfico con Chartsjs
+    this.createGraphChartsjs(this.chartsjsData);
 
-        this.getDataRecordsArrayFromCSVFile(csvRecordsArray);
-        this.d3getDataRecordsArrayFromCSVFile(csvRecordsArray, headersRow); //Hace falta el nombre de la cabecera para las series ({Cabecera:Value})
+    //-------------------------------------------------------------------------------------
 
-        //TOAST
-        const toastData = {
-          categories: [],
-          series: [
-            {
-              name: '',
-              data: [],
-            },
-          ],
-        };
-        toastData.categories = seriesName;
-        toastData.series[0].name = "Porcenataje de diferencia Bélgica - España: ";
-        toastData.series[0].data = this.values;
-        //Creación del gráfico con Toast
-        this.createGraphToast(toastData);
+    //D3
 
-        //-------------------------------------------------------------------------------------
+    //Creación del gráfico con d3
+    this.draw3d();
 
-        //CHARTSJS
-        this.chartsjsData.labels = seriesName;
-        this.chartsjsData.datasets[0].label = "%";
-        this.chartsjsData.datasets[0].data = this.values;
-        //Creación del gráfico con Chartsjs
-        this.createGraphChartsjs(this.chartsjsData);
-
-        //-------------------------------------------------------------------------------------
-
-        //D3
-
-        //Creación del gráfico con d3
-        this.draw3d();
-
-
-
-        reader.onerror = function () {
-          console.log('error is occured while reading file!');
-        };
-      };
-
-    } else {
-      alert("Please import valid .csv file.");
-      this.fileReset();
-    }
   }
 
   private createGraphChartsjs(data: any) {
@@ -139,7 +139,7 @@ export class DeviationComponent implements OnInit {
               text: 'Porcentaje de diferencia Bélgica - España',
             },
           },
-          x:{
+          x: {
             title: {
               display: true,
               text: 'Tipo de alimentos',
@@ -357,10 +357,6 @@ export class DeviationComponent implements OnInit {
     console.log(this.values)
   }
 
-  isValidCSVFile(file: any) {
-    return file.name.endsWith(".csv");
-  }
-
   getHeaderArray(csvRecordsArr: any) {
     let headers = (<string>csvRecordsArr[0]).split('\",');
     let headerArray = [];
@@ -369,13 +365,5 @@ export class DeviationComponent implements OnInit {
     }
     return headerArray;
   }
-
-  fileReset() {
-    this.csvReader.nativeElement.value = "";
-    this.categorias = [];
-    this.values = [];
-  }
-
-
 
 }
