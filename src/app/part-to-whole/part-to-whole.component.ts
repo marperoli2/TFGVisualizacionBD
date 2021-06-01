@@ -16,6 +16,7 @@ export class PartToWholeComponent implements OnInit {
   @ViewChild('csvReader') csvReader: any;
   private categorias: any = []; // Para guardar las categorias o la coordenada x
   private values: any = []; // Para guardar los valroes de las serie
+  private sss: any = []
 
   //PARA CHARTSJS
   @ViewChild('myChart') private barCanvas: ElementRef;
@@ -26,7 +27,12 @@ export class PartToWholeComponent implements OnInit {
       {
         label: '',
         data: [],
-        backgroundColor: 'rgba(0, 143, 57)'
+        backgroundColor: 'rgba(59, 131, 189)'
+      },
+      {
+        label: '',
+        data: [],
+        backgroundColor: 'rgba(255, 128, 0)'
       },
     ],
   };
@@ -70,6 +76,7 @@ export class PartToWholeComponent implements OnInit {
         } //para quitar dobles comillas con las que sale del csv
 
         this.getDataRecordsArrayFromCSVFile(csvRecordsArray);
+        this.getDataRecordsArrayFromCSVFileBelg(csvRecordsArray);
         this.d3getDataRecordsArrayFromCSVFile(csvRecordsArray, headersRow); //Hace falta el nombre de la cabecera para las series ({Cabecera:Value})
 
         //TOAST
@@ -80,11 +87,17 @@ export class PartToWholeComponent implements OnInit {
               name: '',
               data: [],
             },
+            {
+              name: '',
+              data: [],
+            },
           ],
         };
         toastData.categories = seriesName;
-        toastData.series[0].name = "Porcentaje de consumo en España:";
+        toastData.series[0].name = "España:";
         toastData.series[0].data = this.values;
+        toastData.series[1].name = "Bélgica:";
+        toastData.series[1].data = this.sss;
         //Creación del gráfico con Toast
         this.createGraphToast(toastData);
 
@@ -94,6 +107,8 @@ export class PartToWholeComponent implements OnInit {
         this.chartsjsData.labels = seriesName;
         this.chartsjsData.datasets[0].label = "%";
         this.chartsjsData.datasets[0].data = this.values;
+        this.chartsjsData.datasets[1].label = "%";
+        this.chartsjsData.datasets[1].data = this.sss;
         //Creación del gráfico con Chartsjs
         this.createGraphChartsjs(this.chartsjsData);
 
@@ -137,7 +152,7 @@ export class PartToWholeComponent implements OnInit {
           x: {
             title: {
               display: true,
-              text: 'Porcentaje de consumo en España',
+              text: 'Porcentaje de consumo en',
             },
             type: 'linear',
             beginAtZero: true,
@@ -160,7 +175,7 @@ export class PartToWholeComponent implements OnInit {
     const options = {
       chart: { title: '', width: 15000, height: 500 },
       xAxis: {
-        title: 'Porcentaje de consumo en España',
+        title: 'Porcentaje de consumo',
       },
       yAxis: {
         title: 'Tipo de alimentos',
@@ -264,7 +279,7 @@ export class PartToWholeComponent implements OnInit {
     this.svg.append("text")
       .attr("transform", "translate(" + (this.width / 2) + ", " + (this.height + 50) + ")")
       .style("text-anchor", "middle")
-      .text("Porcentaje de consumo en España");
+      .text("Porcentaje de consumo en");
   }
 
 
@@ -313,6 +328,26 @@ export class PartToWholeComponent implements OnInit {
             aux = 0
           }
           this.values.push(aux);
+        }
+        encontrado = true; //Para que no siga buscando cuando encuentre España
+      }
+    }
+  }
+
+  getDataRecordsArrayFromCSVFileBelg(csvRecordsArray: any) {
+
+    var encontrado = false;
+
+    for (let i = 1; i < csvRecordsArray.length && !encontrado; i++) {
+      let currentRecord = (<string>csvRecordsArray[i]).split(',');
+      console.log(currentRecord[0])
+      if (currentRecord[0] === "\"Belgium\"") {
+        for (let j = 1; j < currentRecord.length - 8; j++) {
+          let aux = Number(parseFloat(currentRecord[j]).toFixed(2));
+          if (isNaN(parseFloat(currentRecord[j]))) {
+            aux = 0
+          }
+          this.sss.push(aux);
         }
         encontrado = true; //Para que no siga buscando cuando encuentre España
       }

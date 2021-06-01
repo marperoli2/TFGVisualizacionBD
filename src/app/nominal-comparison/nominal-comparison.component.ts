@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { ColumnChart } from '@toast-ui/chart';
+import { BarChart, ColumnChart } from '@toast-ui/chart';
 import { BarController, BarElement, CategoryScale, Chart, LinearScale, Title } from 'chart.js';
 import * as d3 from 'd3';
 
@@ -137,22 +137,23 @@ export class NominalComparisonComponent implements OnInit {
             text: 'Nominal Comparison & Ranking - ChartsJS',
           }
         },
+        indexAxis: 'y',
         scales: {
-          y: {
+          x: {
             title: {
               display: true,
-              text: 'Porcentaje de infectados que fallecen',
+              text: 'Porcentaje de infectados que fallecen'
             },
             type: 'linear',
             beginAtZero: true,
           },
-          x: {
+          y: {
             title: {
               display: true,
-              text: 'Paises del mundo'
+              text: 'Paises del mundo',
             }
           }
-        }
+        },
       }
     });
   }
@@ -160,12 +161,12 @@ export class NominalComparisonComponent implements OnInit {
   createGraphToast(data: any) {
 
     const options = {
-      chart: { title: '', width: 500, height: 500 },
+      chart: { title: '', width: 500, height: 1500 },
       xAxis: {
-        title: 'Países del mundo',
+        title: 'Porcentaje de infectados que fallecen',
       },
       yAxis: {
-        title: 'Porcentaje de infectados que fallecen',
+        title: 'Países del mundo',
       },
     };
 
@@ -173,7 +174,7 @@ export class NominalComparisonComponent implements OnInit {
     options.chart.width = 65 * data.series[0].data.length;
 
     const el = document.getElementById('grafica');
-    const chart = new ColumnChart({ el, data, options });
+    const chart = new BarChart({ el, data, options });
 
   }
 
@@ -231,38 +232,6 @@ export class NominalComparisonComponent implements OnInit {
       .attr("width", x.bandwidth())
       .attr("height", (d) => this.height - y(d.death))
       .attr("fill", "#d04a35");
-
-
-
-
-    /* // gridlines in x axis function
-     function make_x_gridlines() {
-       return d3.axisBottom(x)
-         .ticks(20)
-     }
- 
-     // gridlines in y axis function
-     function make_y_gridlines() {
-       return d3.axisLeft(y)
-         .ticks(20)
-     }
- 
-     // add the X gridlines
-     this.svg.append("g")
-       .attr("class", "grid")
-       .attr("transform", "translate(0," + this.height + ")")
-       .call(make_x_gridlines()
-         .tickSize(-this.height)
-       )
- 
-     // add the Y gridlines
-     this.svg.append("g")
-       .attr("class", "grid")
-       .call(make_y_gridlines()
-         .tickSize(-this.width)
-       )*/
-
-
 
 
 
