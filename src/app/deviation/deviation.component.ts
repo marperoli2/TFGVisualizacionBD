@@ -198,10 +198,7 @@ export class DeviationComponent implements OnInit {
     // Draw the X-axis on the DOM
     this.svg.append("g")
       .attr("transform", "translate(0," + height + ")")
-      .call(d3.axisBottom(x)
-        .tickSize(-height))
-      .call(g => g.selectAll(".tick:not(:first-of-type) line")
-        .attr("stroke", "grey"))
+      .call(d3.axisBottom(x))
       .selectAll("text")
       .attr("transform", "translate(-10,0)rotate(-45)")
       .style("text-anchor", "end");
@@ -227,7 +224,7 @@ export class DeviationComponent implements OnInit {
 
     var yAxis = d3.axisLeft(yAxisScale)
       .ticks(5)
-      .tickSize(-width);
+      .tickSizeInner(-width);
 
     this.svg.append('g')
       .attr('transform', function (d) {

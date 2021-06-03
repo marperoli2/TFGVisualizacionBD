@@ -106,10 +106,7 @@ export class DistributionComponent implements OnInit {
     // Draw the X-axis on the DOM
     this.svg.append('g')
       .attr('transform', 'translate(0,' + height + ')')
-      .call(d3.axisBottom(x)
-        .tickSize(-height))
-      .call(g => g.selectAll(".tick:not(:first-of-type) line")
-        .attr("stroke", "grey"));
+      .call(d3.axisBottom(x));
 
     var y = d3.scaleLinear()
       .domain([0, 100])
@@ -117,9 +114,9 @@ export class DistributionComponent implements OnInit {
 
     this.svg.append('g')
       .call(d3.axisLeft(y)
-        .tickSize(-width))
+        .tickSizeInner(-width))
       .call(g => g.selectAll(".tick:not(:first-of-type) line")
-        .attr("stroke", "grey"));;
+        .attr("stroke", "grey"));
 
     this.svg.selectAll("rect")
       .data(mybuc)

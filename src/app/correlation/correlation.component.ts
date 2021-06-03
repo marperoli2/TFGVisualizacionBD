@@ -131,8 +131,9 @@ export class CorrelationComponent implements OnInit {
     svgD3.append("g")
       .attr("transform", "translate(0," + height + ")")
       .call(d3.axisBottom(x)
+        .ticks(2)
         .tickFormat(d3.format("d"))
-        .tickSize(-height))
+        .tickSizeInner(-height))
       .call(g => g.selectAll(".tick:not(:first-of-type) line")
         .attr("stroke", "grey"));
 
@@ -141,7 +142,8 @@ export class CorrelationComponent implements OnInit {
       .range([height, 0]);
     svgD3.append("g")
       .call(d3.axisLeft(y)
-        .tickSize(-width))
+        .ticks(2)
+        .tickSizeInner(-width))
       .call(g => g.selectAll(".tick:not(:first-of-type) line")
         .attr("stroke", "grey"));
 

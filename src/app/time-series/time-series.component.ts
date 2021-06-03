@@ -233,7 +233,7 @@ export class TimeSeriesComponent implements OnInit {
 
     const xAxis = d3
       .axisBottom(this.xScale)
-      .tickSize(-(this.height - 2 * this.margin));
+      .tickSizeInner(-(this.height - 2 * this.margin));
 
     this.xAxis.call(xAxis)
       .call(g => g.selectAll(".tick:not(:first-of-type) line")
@@ -246,7 +246,7 @@ export class TimeSeriesComponent implements OnInit {
     const yAxis = d3
       .axisLeft(this.yScale)
       .ticks(10)
-      .tickSize(-(this.width - 3 * this.margin));
+      .tickSizeInner(-(this.width - 3 * this.margin));
 
     this.yAxis.call(yAxis)
       .call(g => g.selectAll(".tick:not(:first-of-type) line")
