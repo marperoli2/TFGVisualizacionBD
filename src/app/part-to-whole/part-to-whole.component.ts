@@ -214,7 +214,8 @@ export class PartToWholeComponent implements OnInit {
       .padding(0.4);
 
     this.svg.append("g")
-      .call(d3.axisLeft(y));
+      .call(d3.axisLeft(y)
+      .tickSizeInner(0));
 
     const x = d3.scaleLinear()
       .domain([0, this.maxY])

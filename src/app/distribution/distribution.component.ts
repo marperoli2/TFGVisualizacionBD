@@ -68,7 +68,7 @@ export class DistributionComponent implements OnInit {
     var vis = new candela.components.Histogram(el, {
       data: this.values,
       x: 'Intervalos sobre porcentajes de obesidad',
-      width: 700,
+      width: window.innerWidth/2,
       height: 400
     });
     vis.render();
@@ -81,12 +81,11 @@ export class DistributionComponent implements OnInit {
     }
 
     var bin1 = d3.bin();
-    var bin2 = d3.bin().thresholds([0, 0.04, 0.08]);
     var mybuc = bin1(myValues);
 
     var margin = { top: 50, right: 30, bottom: 50, left: 60 },
-      width = 530 - margin.left - margin.right,
-      height = 280 - margin.top - margin.bottom;
+      width = window.innerWidth/2 - margin.left - margin.right,
+      height = 400 - margin.top - margin.bottom;
 
     var max = (Math.trunc(d3.max(myValues) / 0.02) + 1) * 0.02;
     var min = d3.min(myValues);
@@ -99,8 +98,12 @@ export class DistributionComponent implements OnInit {
       .attr("transform",
         "translate(" + margin.left + "," + margin.top + ")");
 
+    var aux = Math.trunc((max/5) + 1) * 5; 
+    console.log(max)
+    console.log(aux)
+
     var x = d3.scaleLinear()
-      .domain([min, max])
+      .domain([min, aux])
       .range([0, width]);
 
     // Draw the X-axis on the DOM
@@ -109,7 +112,7 @@ export class DistributionComponent implements OnInit {
       .call(d3.axisBottom(x));
 
     var y = d3.scaleLinear()
-      .domain([0, 100])
+      .domain([0, max])
       .range([height, 0]);
 
     this.svg.append('g')
@@ -160,8 +163,8 @@ export class DistributionComponent implements OnInit {
       let currentRecord = (<string>csvRecordsArray[i]).split(',');
 
 
-      if (!isNaN(parseFloat(currentRecord[27]))) {
-        deaths = parseFloat(currentRecord[27].trim().replace(/['"]+/g, ''));
+      if (!isNaN(parseFloat(currentRecord[24]))) {
+        deaths = parseFloat(currentRecord[24].trim().replace(/['"]+/g, ''));
       } else {
         deaths = 0;
       }

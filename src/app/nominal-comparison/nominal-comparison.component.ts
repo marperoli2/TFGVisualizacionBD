@@ -25,6 +25,7 @@ export class NominalComparisonComponent implements OnInit {
 
   //PARA CHARTSJS
   @ViewChild('myChart') private barCanvas: ElementRef;
+
   nominalComparisonChart: any;
   chartsjsData = {
     labels: [],
@@ -126,6 +127,7 @@ export class NominalComparisonComponent implements OnInit {
   private createGraphChartsjs(data: any) {
 
     Chart.register(BarController, LinearScale, CategoryScale, BarElement, Title);
+    this.barCanvas.nativeElement.height = 1500;
     this.nominalComparisonChart = new Chart(this.barCanvas.nativeElement, {
       type: "bar",
       data: data,
@@ -141,7 +143,7 @@ export class NominalComparisonComponent implements OnInit {
           x: {
             title: {
               display: true,
-              text: 'Porcentaje de infectados que fallecen'
+              text: 'Porcentaje de infectados que fallecen',
             },
             type: 'linear',
             beginAtZero: true,
@@ -150,8 +152,8 @@ export class NominalComparisonComponent implements OnInit {
             title: {
               display: true,
               text: 'Paises del mundo',
-            }
-          }
+            },
+          },
         },
       }
     });
@@ -160,7 +162,7 @@ export class NominalComparisonComponent implements OnInit {
   createGraphToast(data: any) {
 
     const options = {
-      chart: { title: '', width: 500, height: 1500 },
+      chart: { title: '', width: window.innerWidth, height: 1500 },
       xAxis: {
         title: 'Porcentaje de infectados que fallecen',
       },
@@ -170,7 +172,6 @@ export class NominalComparisonComponent implements OnInit {
     };
 
     options.chart.title = "Nominal Comparison & Ranking - Toast";
-    options.chart.width = 65 * data.series[0].data.length;
 
     const el = document.getElementById('grafica');
     const chart = new BarChart({ el, data, options });
