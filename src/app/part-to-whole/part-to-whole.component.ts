@@ -192,7 +192,7 @@ export class PartToWholeComponent implements OnInit {
   private createSvg(): void {
 
     this.margin3d = { top: 10, right: 30, bottom: 100, left: 140 }
-    this.width3d = 2250 - this.margin3d.left - this.margin3d.right
+    this.width3d = window.innerWidth - this.margin3d.left - this.margin3d.right - 45;
     this.height3d = 1200 - this.margin3d.top - this.margin3d.bottom;
 
     this.svg = d3.select("figure#imagen")
@@ -223,7 +223,7 @@ export class PartToWholeComponent implements OnInit {
     this.svg.append("g")
       .attr("transform", "translate(0," + this.height3d + ")")
       .call(d3.axisBottom(x)
-      .tickSizeInner(-this.width3d))
+      .tickSizeInner(-this.height3d))
       .call(g => g.selectAll(".tick:not(:first-of-type) line")
         .attr("stroke", "gray"));
 
@@ -245,7 +245,7 @@ export class PartToWholeComponent implements OnInit {
       .selectAll("rect")
       .data(function (d) { return subgrupos.map(function (key) { return { key: key, value: d[key] }; }); })
       .enter().append("rect")
-      .attr("x", function (d) { return y(d.value); })
+      .attr("x", 0)
       .attr("y", function (d) { return ySubgroup(d.key); })
       .attr("width", function (d) { return x(d.value); })
       .attr("height", ySubgroup.bandwidth)

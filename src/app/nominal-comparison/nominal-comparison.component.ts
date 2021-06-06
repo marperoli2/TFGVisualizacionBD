@@ -41,10 +41,11 @@ export class NominalComparisonComponent implements OnInit {
 
   //PARA D3
   private svg: any;
-  private margin: number;
-  private width: number;
-  private height: number;
   private maxY: number = 0;
+  private margin3d: any;
+  private width3d;
+  private height3d;
+
   // El elemento que elige el fichero
   @ViewChild('csvReader') csvReaderd3: any;
   private d3Data: any[] = [];
@@ -115,9 +116,6 @@ export class NominalComparisonComponent implements OnInit {
     //-------------------------------------------------------------------------------------
 
     //D3
-    this.margin = 120;
-    this.width = 3000;
-    this.height = 400;
     //Creación del gráfico con d3
     this.createSvg();
     this.drawBars(this.d3Data.sort((a, b) => d3.descending(a.death, b.death)));
@@ -180,85 +178,81 @@ export class NominalComparisonComponent implements OnInit {
   }
 
   private createSvg(): void {
+
+    this.margin3d = { top: 100, right: 30, bottom: 100, left: 163 }
+    this.width3d = window.innerWidth - this.margin3d.left - this.margin3d.right - 45;
+    /*1750 - this.margin3d.left - this.margin3d.right*/
+    this.height3d = 2000 - this.margin3d.top - this.margin3d.bottom;
+
     this.svg = d3.select("figure#imagen")
       .append("svg")
-      .attr("width", this.width + (this.margin * 2))
-      .attr("height", this.height + (this.margin * 2))
-      .attr("height", this.height + (this.margin * 2))
+      .attr("width", this.width3d + this.margin3d.left + this.margin3d.right)
+      .attr("height", this.height3d + this.margin3d.top + this.margin3d.bottom)
       .append("g")
-      .attr("transform", "translate(" + this.margin + "," + this.margin + ")");
+      .attr("transform", "translate(" + this.margin3d.left + "," + this.margin3d.top +")");
 
   }
 
   private drawBars(data: any[]): void {
 
     // Create the X-axis band scale
-    const x = d3.scaleBand()
-      .range([0, this.width])
-      .domain(data.map(d => d.country))
-      .padding(0.2);
+    const x = d3.scaleLinear()
+      .domain([0, this.maxY])
+      .range([0, this.width3d]);
 
     // Draw the X-axis on the DOM
     this.svg.append("g")
-      .attr("transform", "translate(0," + this.height + ")")
+      .attr("transform", "translate(0," + this.height3d  + ")")
       .call(d3.axisBottom(x)
-        .tickSize(-this.height))
+        .tickSizeInner(-(this.height3d)))
       .call(g => g.selectAll(".tick:not(:first-of-type) line")
-        .attr("stroke", "grey"))
-      .selectAll("text")
-      .attr("transform", "translate(-10,0)rotate(-45)")
-      .style("text-anchor", "end");
+        .attr("stroke", "grey"));
 
     // Create the Y-axis band scale
-    const y = d3.scaleLinear()
-      .domain([0, this.maxY])
-      .range([this.height, 0]);
+    const y = d3.scaleBand()
+      .domain(data.map(d => d.country))
+      .range([ 0, this.height3d])
+      .padding(0.4);
 
     // Draw the Y-axis on the DOM
     this.svg.append("g")
-      .attr("class", "grid")
       .call(d3.axisLeft(y)
-        .ticks(10)
-        .tickSize(-this.width))
-      .call(g => g.selectAll(".tick:not(:first-of-type) line")
-        .attr("stroke", "grey"));
+      .tickSize(0));
 
     // Create and fill the bars
     this.svg.selectAll("bars")
       .data(data)
       .enter()
       .append("rect")
-      .attr("x", d => x(d.country))
-      .attr("y", d => y(d.death))
-      .attr("width", x.bandwidth())
-      .attr("height", (d) => this.height - y(d.death))
+      .attr("x",0) // d => x(d.death)
+      .attr("y",function (d) {return y(d.country)})
+      .attr("width", function (d) {return x(d.death); })
+      .attr("height",y.bandwidth())
       .attr("fill", "#d04a35");
-
-
 
     //Añadiendo título al gráfico
     this.svg.append("text")
-      .attr("x", (this.width / 20))
-      .attr("y", 0 - (this.margin / 2))
+      .attr("x", (this.width3d / 2))
+      .attr("y", 0 -25)
       .attr("text-anchor", "middle")
       .style("font-size", "16px")
+      //Añadiendo título al eje Y
       .text("Nominal Comparison & Ranking - d3");
 
-    //Añadiendo título al eje Y
+
     this.svg.append("text")
       .attr("transform", "rotate(-90)")
-      .attr("y", 0 - this.margin / 2)
-      .attr("x", 0 - (this.height / 2))
+      .attr("y", 0 - this.margin3d.left )
+      .attr("x", 0 - (this.height3d / 2))
       .attr("dy", "1em")
-      .style("text-anchor", "middle")
-      .text("Porcentaje de infectados que fallecen");
-
-    //Añadiendo título al eje X
-    this.svg.append("text")
-      .attr("transform", "translate(" + (this.width / 2) + " ," + (this.height + this.margin) + ")")
       .style("text-anchor", "middle")
       .text("Países del mundo");
 
+    //Añadiendo título al eje X
+    this.svg.append("text")
+      .attr("transform", "translate(" + (this.width3d / 2) + " ," + (this.height3d + 50) + ")")
+      .style("text-anchor", "middle")
+      .text("Porcentaje de infectados que fallecen");
   }
 
   d3getDataRecordsArrayFromCSVFile(csvRecordsArray: any) {
