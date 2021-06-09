@@ -232,8 +232,8 @@ export class DeviationComponent implements OnInit {
       .attr("x", width/2)
       .attr("y", -10)
       .attr("text-anchor", "middle")
-      .style("font-size", "16px")
-      .style("font", "sans-serif")
+      .attr("font-family", "Arial, Helvetica, sans-serif")
+      .style("font-size", "12px")
       .text("Deviation - d3");
 
     //Añadiendo título al eje Y
@@ -243,14 +243,16 @@ export class DeviationComponent implements OnInit {
       .attr("x", 0 - (height / 2))
       .attr("dy", "1em")
       .style("text-anchor", "middle")
-      .style("font", "sans-serif")
+      .attr("font-family", "Arial, Helvetica, sans-serif")
+      .style("font-size", "12px")
       .text("Tipo de alimentos");
 
     //Añadiendo título al eje X
     this.svg.append("text")
       .attr("transform", "translate(" + (width / 2) + " ," + (height + margin.top * 1.5) + ")")
       .style("text-anchor", "middle")
-      .style("font", "sans-serif")
+      .attr("font-family", "Arial, Helvetica, sans-serif")
+      .style("font-size", "12px")
       .text("Porcentaje de diferencia Bélgica - España");
 
   }

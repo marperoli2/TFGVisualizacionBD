@@ -182,13 +182,13 @@ export class NominalComparisonComponent implements OnInit {
   private createSvg(): void {
 
     this.margin3d = { top: 100, right: 0, bottom: 100, left: 160 }
-    this.width3d = window.innerWidth - this.margin3d.left - this.margin3d.right -45;
+    this.width3d = window.innerWidth - this.margin3d.left - this.margin3d.right - 45;
     /*1750 - this.margin3d.left - this.margin3d.right*/
     this.height3d = 2000 - this.margin3d.top - this.margin3d.bottom;
 
     this.svg = d3.select("figure#imagen")
       .append("svg")
-      .attr("width", this.width3d +this.margin3d.left + this.margin3d.right)
+      .attr("width", this.width3d + this.margin3d.left + this.margin3d.right)
       .attr("height", this.height3d + this.margin3d.top + this.margin3d.bottom)
       .append("g")
       .attr("transform", "translate(" + this.margin3d.left + "," + this.margin3d.top + ")");
@@ -234,17 +234,18 @@ export class NominalComparisonComponent implements OnInit {
 
     //Añadiendo título al gráfico
     this.svg.append("text")
-      .style("font", "sans-serif")
+      .attr("font-family", "Arial, Helvetica, sans-serif")
+      .style("font-size", "12px")
       .attr("x", (this.width3d / 2))
       .attr("y", 0 - 25)
       .attr("text-anchor", "middle")
-      .style("font-size", "16px")
       //Añadiendo título al eje Y
       .text("Nominal Comparison & Ranking - d3");
 
 
     this.svg.append("text")
-      .style("font", "sans-serif")
+      .attr("font-family", "Arial, Helvetica, sans-serif")
+      .style("font-size", "12px")
       .attr("transform", "rotate(-90)")
       .attr("y", 0 - this.margin3d.left)
       .attr("x", 0 - (this.height3d / 2))
@@ -254,7 +255,8 @@ export class NominalComparisonComponent implements OnInit {
 
     //Añadiendo título al eje X
     this.svg.append("text")
-      .style("font", "sans-serif")
+      .attr("font-family", "Arial, Helvetica, sans-serif")
+      .style("font-size", "12px")
       .attr("transform", "translate(" + (this.width3d / 2) + " ," + (this.height3d + 50) + ")")
       .style("text-anchor", "middle")
       .text("Porcentaje de infectados que fallecen");

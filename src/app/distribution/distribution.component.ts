@@ -99,7 +99,7 @@ export class DistributionComponent implements OnInit {
         "translate(" + margin.left + "," + margin.top + ")");
 
     var aux = Math.trunc((max / 5) + 1) * 5;
-    
+
 
     var x = d3.scaleLinear()
       .domain([min, aux])
@@ -132,16 +132,17 @@ export class DistributionComponent implements OnInit {
 
     //Añadiendo título al gráfico
     this.svg.append("text")
-    .style("font", "sans-serif")
+      .attr("font-family", "Arial, Helvetica, sans-serif")
+      .style("font-size", "12px")
       .attr("x", width / 2)
       .attr("y", -10)
       .attr("text-anchor", "middle")
-      .style("font-size", "16px")
       .text("Distribution - d3");
 
     //Añadiendo título al eje Y
     this.svg.append("text")
-    .style("font", "sans-serif")
+      .attr("font-family", "Arial, Helvetica, sans-serif")
+      .style("font-size", "12px")
       .attr("transform", "rotate(-90)")
       .attr("y", 0 - margin.left / 1.3)
       .attr("x", 0 - (height / 2))
@@ -151,7 +152,8 @@ export class DistributionComponent implements OnInit {
 
     //Añadiendo título al eje X
     this.svg.append("text")
-    .style("font", "sans-serif")
+      .attr("font-family", "Arial, Helvetica, sans-serif")
+      .style("font-size", "12px").style("font", "sans-serif")
       .attr("transform", "translate(" + (width / 2) + " ," + (height + margin.bottom / 1.5) + ")")
       .style("text-anchor", "middle")
       .text("Intervalos sobre porcentajes de obesidad");

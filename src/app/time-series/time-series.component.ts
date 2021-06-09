@@ -217,7 +217,7 @@ export class TimeSeriesComponent implements OnInit {
   createGraphToast(data: any) {
 
     const options = {
-      chart: { title: 'Time Series - Toast', width: window.innerWidth - 50, height: 700 },
+      chart: { title: 'Time Series - Toast', width: window.innerWidth - 50, height: 500 },
       xAxis: {
         title: 'Año',
       },
@@ -233,7 +233,7 @@ export class TimeSeriesComponent implements OnInit {
   private createSvg(): void {
 
     this.margin3d = { top: 25, right: 50, bottom: 75, left: 50 }
-    this.width3d = window.innerWidth - this.margin3d.left - this.margin3d.right-50;
+    this.width3d = window.innerWidth - this.margin3d.left - this.margin3d.right - 50;
     this.height3d = 700 - this.margin3d.top - this.margin3d.bottom;
 
     this.svg = d3.select("figure#imagen")
@@ -337,8 +337,8 @@ export class TimeSeriesComponent implements OnInit {
       .attr("x", this.width3d / 2)
       .attr("y", -10)
       .attr("text-anchor", "middle")
-      .style("font-size", "16px")
-      .style("font", "sans-serif")
+      .attr("font-family", "Arial, Helvetica, sans-serif")
+      .style("font-size", "12px")
       .text("Time Series - d3");
 
     //Añadiendo título al eje Y
@@ -348,13 +348,15 @@ export class TimeSeriesComponent implements OnInit {
       .attr("x", (-this.height3d / 2))
       .attr("dy", "1em")
       .style("text-anchor", "middle")
-      .style("font", "sans-serif")
+      .attr("font-family", "Arial, Helvetica, sans-serif")
+      .style("font-size", "12px")
       .text("Porcentaje de personas que usan internet");
 
     //Añadiendo título al eje X
     this.svg.append("text")
-    .style("font", "sans-serif")
-    .attr("transform", "translate(" + this.width3d / 2 + "," + (this.height3d + this.margin3d.top + this.margin3d.bottom / 2) + ")")
+      .attr("font-family", "Arial, Helvetica, sans-serif")
+      .style("font-size", "12px")
+      .attr("transform", "translate(" + this.width3d / 2 + "," + (this.height3d + this.margin3d.top + this.margin3d.bottom / 2) + ")")
       .style("text-anchor", "middle")
       .text("Año");
 

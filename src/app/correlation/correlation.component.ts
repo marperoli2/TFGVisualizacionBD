@@ -169,17 +169,18 @@ export class CorrelationComponent implements OnInit {
 
     //Añadiendo título al gráfico
     svgD3.append("text")
-    .style("font", "sans-serif")
+    .attr("font-family", "Arial, Helvetica, sans-serif")
       .attr("x", (width / 2))
       .attr("y", -margin.top / 2)
       .attr("text-anchor", "middle")
-      .style("font-size", "16px")
+      .style("font-size", "12px")
       .text("Correlation - d3");
 
     //Añadiendo título al eje Y
     svgD3.append("text")
-    .style("font", "sans-serif")
+    .attr("font-family", "Arial, Helvetica, sans-serif")
       .attr("transform", "rotate(-90)")
+      .style("font-size", "12px")
       .attr("y", -margin.left)
       .attr("x", 0 - (height / 2))
       .attr("dy", "1em")
@@ -188,7 +189,8 @@ export class CorrelationComponent implements OnInit {
 
     //Añadiendo título al eje X
     svgD3.append("text")
-    .style("font", "sans-serif")
+    .attr("font-family", "Arial, Helvetica, sans-serif")
+      .style("font-size", "12px")
       .attr("transform", "translate(" + (width / 2) + " ," + (height + margin.top) + ")")
       .style("text-anchor", "middle")
       .text("Porcentaje de población con obesidad");
@@ -196,51 +198,59 @@ export class CorrelationComponent implements OnInit {
     //Añadiendo texto izq superior
     svgD3.append("text")
       .attr("font-family", "Arial, Helvetica, sans-serif")
+      .style("font-size", "12px")
       .attr("transform", "translate(" + margin.left / 2 + " ," + margin.top + ")")
       .style("text-anchor", "left")
       .text("Alto % Fallecimiento");
 
     svgD3.append("text")
       .attr("font-family", "Arial, Helvetica, sans-serif")
+      .style("font-size", "12px")
       .attr("transform", "translate(" + margin.left / 2 + " ," + 1.5 * margin.top + ")")
       .style("text-anchor", "left")
       .text("Bajo % Obesidad");
 
     //Añadiendo texto izq inferior
     svgD3.append("text")
-    .style("font", "sans-serif")
+    .attr("font-family", "Arial, Helvetica, sans-serif")
+    .style("font-size", "12px")
       .attr("transform", "translate(" + margin.left / 2 + " ," + (height / 2 + margin.top) + ")")
       .style("text-anchor", "left")
       .text("Bajo % Fallecimiento");
 
     svgD3.append("text")
-    .style("font", "sans-serif")
+    .attr("font-family", "Arial, Helvetica, sans-serif")
+    .style("font-size", "12px")
       .attr("transform", "translate(" + margin.left / 2 + " ," + (height / 2 + 1.5 * margin.top) + ")")
       .style("text-anchor", "left")
       .text("Bajo % Obesidad");
 
     //Añadiendo texto derecha superior
     svgD3.append("text")
-    .style("font", "sans-serif")
+    .attr("font-family", "Arial, Helvetica, sans-serif")
+    .style("font-size", "12px")
       .attr("transform", "translate(" + (width - 3 * margin.left) + " ," + margin.top + ")")
       .style("text-anchor", "left")
       .text("Alto % Fallecimiento");
 
     svgD3.append("text")
-    .style("font", "sans-serif")
+    .attr("font-family", "Arial, Helvetica, sans-serif")
+    .style("font-size", "12px")
       .attr("transform", "translate(" + (width - 3 * margin.left) + " ," + 1.5 * margin.top + ")")
       .style("text-anchor", "left")
       .text("Alto % Obesidad");
 
     //Añadiendo texto izq inferior
     svgD3.append("text")
-    .style("font", "sans-serif")
+    .attr("font-family", "Arial, Helvetica, sans-serif")
+    .style("font-size", "12px")
       .attr("transform", "translate(" + (width - 3 * margin.left) + " ," + (height / 2 + margin.top) + ")")
       .style("text-anchor", "left")
       .text("Bajo % Fallecimiento");
 
     svgD3.append("text")
-    .style("font", "sans-serif")
+    .attr("font-family", "Arial, Helvetica, sans-serif")
+    .style("font-size", "12px")
       .attr("transform", "translate(" + (width - 3 * margin.left) + " ," + (height / 2 + 1.5 * margin.top) + ")")
       .style("text-anchor", "left")
       .text("Alto % Obesidad");
@@ -288,7 +298,7 @@ export class CorrelationComponent implements OnInit {
   createGraphToast(data: any) {
 
     const options = {
-      chart: { title: 'Correlation - Toast', width: window.innerWidth-50, height: 600 },
+      chart: { title: 'Correlation - Toast', width: window.innerWidth-50, height: 500 },
       legend:{
         visible:false
       },
@@ -317,8 +327,8 @@ export class CorrelationComponent implements OnInit {
 
     for (let i = 1; i < csvRecordsArray.length; i++) {
       let currentRecord = (<string>csvRecordsArray[i]).split(',');
-      let x = parseFloat(currentRecord[24]);
-      let y = parseFloat(currentRecord[27]);
+      let x = parseFloat(currentRecord[24]);//*parseFloat(currentRecord[30]);
+      let y = parseFloat(currentRecord[27]);//*parseFloat(currentRecord[30]);
       if (isNaN(x)) {
         x = 0;
       }

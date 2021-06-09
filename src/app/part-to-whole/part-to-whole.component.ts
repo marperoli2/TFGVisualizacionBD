@@ -280,16 +280,17 @@ export class PartToWholeComponent implements OnInit {
 
     //Añadiendo título al gráfico
     this.svg.append("text")
-    .style("font", "sans-serif")
+      .attr("font-family", "Arial, Helvetica, sans-serif")
+      .style("font-size", "12px")
       .attr("x", this.width3d / 2)
       .attr("y", 10)
       .attr("text-anchor", "middle")
-      .style("font-size", "16px")
       .text("Part To Whole - d3");
 
     //Añadiendo título al eje Y
     this.svg.append("text")
-    .style("font", "sans-serif")
+      .attr("font-family", "Arial, Helvetica, sans-serif")
+      .style("font-size", "12px")
       .attr("transform", "rotate(-90)")
       .attr("y", -this.margin3d.left)
       .attr("x", 0 - (this.height3d / 2))
@@ -298,8 +299,9 @@ export class PartToWholeComponent implements OnInit {
       .text("Tipo de alimentos");
 
     //Añadiendo título al eje X
-    this.svg.append("text") 
-    .style("font", "sans-serif")
+    this.svg.append("text")
+      .attr("font-family", "Arial, Helvetica, sans-serif")
+      .style("font-size", "12px")
       .attr("transform", "translate(" + (this.width3d / 2) + ", " + (this.height3d + 50) + ")")
       .style("text-anchor", "middle")
       .text("Porcentaje de consumo en");
@@ -320,7 +322,7 @@ export class PartToWholeComponent implements OnInit {
 
     // draw legend text
     legend.append("text")
-    .style("font", "sans-serif")
+      .style("font", "sans-serif")
       .style("font", "14px open-sans")
       .attr("x", this.width3d - 24)
       .attr("y", 18)
