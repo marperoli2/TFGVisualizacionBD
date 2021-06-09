@@ -127,8 +127,6 @@ export class TimeSeriesComponent implements OnInit {
     //D3
     //Creación del gráfico con d3
 
-    //  this.d3getDataRecordsArrayFromCSVFile(csvRecordsArray, headersRow); //Hace falta el nombre de la cabecera para las series ({Cabecera:Value})
-
     // Calcula los valores máximo y mínimos de la serie
     this.maxX = seriesName.reduce((n, m) => Math.max(n, m));
     this.minX = seriesName.reduce((n, m) => Math.min(n, m));
@@ -200,7 +198,7 @@ export class TimeSeriesComponent implements OnInit {
             beginAtZero: true,
             title: {
               display: true,
-              text: 'Porcentaje de personas que usas internet',
+              text: 'Porcentaje de personas que usa internet',
             },
           },
           x: {
@@ -219,7 +217,7 @@ export class TimeSeriesComponent implements OnInit {
   createGraphToast(data: any) {
 
     const options = {
-      chart: { title: 'Time Series - Toast', width: 1000, height: 500 },
+      chart: { title: 'Time Series - Toast', width: window.innerWidth - 50, height: 700 },
       xAxis: {
         title: 'Año',
       },
@@ -235,8 +233,8 @@ export class TimeSeriesComponent implements OnInit {
   private createSvg(): void {
 
     this.margin3d = { top: 25, right: 50, bottom: 75, left: 50 }
-    this.width3d = window.innerWidth - this.margin3d.left - this.margin3d.right - 45;
-    this.height3d = 1000 - this.margin3d.top - this.margin3d.bottom;
+    this.width3d = window.innerWidth - this.margin3d.left - this.margin3d.right-50;
+    this.height3d = 700 - this.margin3d.top - this.margin3d.bottom;
 
     this.svg = d3.select("figure#imagen")
       .append("svg")
@@ -257,18 +255,15 @@ export class TimeSeriesComponent implements OnInit {
       }
     }
 
-    console.log(puntos);
-
-
     this.svg.selectAll(".circle")
       .data(puntos)
       .enter().append("circle")
       .attr("class", "circle")
       .attr("r", 4)
-      .attr("cx", function (d) { 
+      .attr("cx", function (d) {
         return x(d.year);
       })
-      .attr("cy", function (d) { 
+      .attr("cy", function (d) {
         return y(d.Amount);
       })
       .style("fill", function (d) {
@@ -280,9 +275,6 @@ export class TimeSeriesComponent implements OnInit {
   private drawLine(): void {
 
     // Para dibujar una linea por grupo
-
-    // Obtiene el valor máximo para el eje x
-    console.log("minimo X", this.minX, " maximo X", this.maxX)
 
     var x = d3.scaleLinear()
       .domain([this.minX, this.maxX])
@@ -296,6 +288,7 @@ export class TimeSeriesComponent implements OnInit {
       .call(g => g.selectAll(".tick:not(:first-of-type) line")
         .attr("stroke", "gray"))
       .selectAll("text")
+      .style("font", "sans-serif")
       .attr("transform", "translate(-10,10)rotate(-45)")
       .style("text-anchor", "end");
 
@@ -315,7 +308,6 @@ export class TimeSeriesComponent implements OnInit {
 
     var res = this.d3Data.map(function (d) { return d.key }) // list of group names
 
-    console.log(res)
     var color = d3.scaleOrdinal()
       .domain(res)
       .range(['rgba(59, 131, 189)', 'rgba(255, 128, 0)', '#ff0000', '#8e00d5', '#00aa7f']);
@@ -335,7 +327,6 @@ export class TimeSeriesComponent implements OnInit {
 
       });
 
-    console.log(this.d3Data)
     // Añadiendo los puntos
     this.addPoint(x, y);
 
@@ -347,6 +338,7 @@ export class TimeSeriesComponent implements OnInit {
       .attr("y", -10)
       .attr("text-anchor", "middle")
       .style("font-size", "16px")
+      .style("font", "sans-serif")
       .text("Time Series - d3");
 
     //Añadiendo título al eje Y
@@ -356,11 +348,13 @@ export class TimeSeriesComponent implements OnInit {
       .attr("x", (-this.height3d / 2))
       .attr("dy", "1em")
       .style("text-anchor", "middle")
+      .style("font", "sans-serif")
       .text("Porcentaje de personas que usan internet");
 
     //Añadiendo título al eje X
     this.svg.append("text")
-      .attr("transform", "translate(" + this.width3d / 2 + "," + (this.height3d + this.margin3d.top + this.margin3d.bottom / 2) + ")")
+    .style("font", "sans-serif")
+    .attr("transform", "translate(" + this.width3d / 2 + "," + (this.height3d + this.margin3d.top + this.margin3d.bottom / 2) + ")")
       .style("text-anchor", "middle")
       .text("Año");
 
@@ -381,7 +375,7 @@ export class TimeSeriesComponent implements OnInit {
 
     // draw legend text
     legend.append("text")
-      .style("font", "16px open-sans")
+      .style("font", "14px sans-serif")
       .attr("x", this.margin3d.left * 2)
       .attr("y", 18)
       .attr("dy", ".35em")

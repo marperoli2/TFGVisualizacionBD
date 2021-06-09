@@ -68,7 +68,7 @@ export class DistributionComponent implements OnInit {
     var vis = new candela.components.Histogram(el, {
       data: this.values,
       x: 'Intervalos sobre porcentajes de obesidad',
-      width: window.innerWidth/2,
+      width: window.innerWidth / 2,
       height: 400
     });
     vis.render();
@@ -77,14 +77,14 @@ export class DistributionComponent implements OnInit {
 
     var myValues = [];
     for (let i = 0; i < this.values3d.length; i++) {
-      myValues.push(this.values3d[i].deaths);
+      myValues.push(this.values3d[i].obesity);
     }
 
     var bin1 = d3.bin();
     var mybuc = bin1(myValues);
 
     var margin = { top: 50, right: 30, bottom: 50, left: 60 },
-      width = window.innerWidth/2 - margin.left - margin.right,
+      width = window.innerWidth / 2 - margin.left - margin.right,
       height = 400 - margin.top - margin.bottom;
 
     var max = (Math.trunc(d3.max(myValues) / 0.02) + 1) * 0.02;
@@ -98,9 +98,8 @@ export class DistributionComponent implements OnInit {
       .attr("transform",
         "translate(" + margin.left + "," + margin.top + ")");
 
-    var aux = Math.trunc((max/5) + 1) * 5; 
-    console.log(max)
-    console.log(aux)
+    var aux = Math.trunc((max / 5) + 1) * 5;
+    
 
     var x = d3.scaleLinear()
       .domain([min, aux])
@@ -129,10 +128,11 @@ export class DistributionComponent implements OnInit {
       .attr("transform", function (d) { return "translate(" + x(d.x0) + "," + y(d.length) + ")"; })
       .attr("width", function (d) { return x(d.x1) - x(d.x0) - 1; })
       .attr("height", function (d) { return height - y(d.length); })
-      .style("fill", "#69b3a2");
+      .style("fill", "#007fbf");
 
     //Añadiendo título al gráfico
     this.svg.append("text")
+    .style("font", "sans-serif")
       .attr("x", width / 2)
       .attr("y", -10)
       .attr("text-anchor", "middle")
@@ -141,6 +141,7 @@ export class DistributionComponent implements OnInit {
 
     //Añadiendo título al eje Y
     this.svg.append("text")
+    .style("font", "sans-serif")
       .attr("transform", "rotate(-90)")
       .attr("y", 0 - margin.left / 1.3)
       .attr("x", 0 - (height / 2))
@@ -150,6 +151,7 @@ export class DistributionComponent implements OnInit {
 
     //Añadiendo título al eje X
     this.svg.append("text")
+    .style("font", "sans-serif")
       .attr("transform", "translate(" + (width / 2) + " ," + (height + margin.bottom / 1.5) + ")")
       .style("text-anchor", "middle")
       .text("Intervalos sobre porcentajes de obesidad");
@@ -157,19 +159,19 @@ export class DistributionComponent implements OnInit {
 
   getDataRecordsArrayFromCSVFile(csvRecordsArray: any) {
 
-    let deaths;
+    let obesity;
 
     for (let i = 1; i < csvRecordsArray.length; i++) {
       let currentRecord = (<string>csvRecordsArray[i]).split(',');
 
 
       if (!isNaN(parseFloat(currentRecord[24]))) {
-        deaths = parseFloat(currentRecord[24].trim().replace(/['"]+/g, ''));
+        obesity = parseFloat(currentRecord[24].trim().replace(/['"]+/g, ''));
       } else {
-        deaths = 0;
+        obesity = 0;
       }
-      this.values.push({ "Intervalos sobre porcentajes de obesidad": deaths });
-      this.values3d.push({ deaths });
+      this.values.push({ "Intervalos sobre porcentajes de obesidad": obesity });
+      this.values3d.push({ obesity });
     }
 
 

@@ -5,6 +5,7 @@ import * as d3 from 'd3';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
+
 @Injectable({
   providedIn: 'root'
 })
@@ -36,8 +37,10 @@ export class CorrelationComponent implements OnInit {
       {
         label: '',
         data: [],
-        backgroundColor: 'rgba(0, 143, 57)'
+        backgroundColor: '#47b9ff',
       },
+      
+      
     ],
   };
 
@@ -80,7 +83,7 @@ export class CorrelationComponent implements OnInit {
         {
           name: 'Correlación',
           data: []
-        },
+        }
       ]
     };
     toastData.series[0].data = this.values;
@@ -97,9 +100,10 @@ export class CorrelationComponent implements OnInit {
     //-------------------------------------------------------------------------------------
 
     //D3
-    var margin = { top: 30, right: 30, bottom: 30, left: 60 };
-    var width = 1000 - margin.left - margin.right;
-    var height = 400 - margin.top - margin.bottom;
+    var margin = { top: 30, right: 30, bottom: 50, left: 60 };
+    var width = window.innerWidth - 2 * margin.left - 2 * margin.right;
+    var height = 600 - margin.top - margin.bottom;
+
 
     //Creación del gráfico con d3
 
@@ -123,36 +127,33 @@ export class CorrelationComponent implements OnInit {
 
     // Add X axis
 
+    let maxX = (Math.trunc(d3.max(valorEjeX) / 10) + 1) * 10;
 
     const x = d3.scaleLinear()
-      .domain([0, d3.max(valorEjeX)])
+      .domain([0, maxX])
       .range([0, width]);
 
     svgD3.append("g")
       .attr("transform", "translate(0," + height + ")")
       .call(d3.axisBottom(x)
         .ticks(2)
+        .tickValues([maxX / 2, maxX])
         .tickFormat(d3.format("d"))
         .tickSizeInner(-height))
       .call(g => g.selectAll(".tick:not(:first-of-type) line")
         .attr("stroke", "grey"));
 
+    let maxY = (Math.trunc((d3.max(valorEjeY) * 1000) / 100) + 1) / 10;
     const y = d3.scaleLinear()
-      .domain([0, d3.max(valorEjeY)])
+      .domain([0, maxY])
       .range([height, 0]);
+      
     svgD3.append("g")
       .call(d3.axisLeft(y)
         .ticks(2)
         .tickSizeInner(-width))
       .call(g => g.selectAll(".tick:not(:first-of-type) line")
         .attr("stroke", "grey"));
-
-    /*
-    {x: 0.142134196465269, y: 0.00618577887381833},
-    {x: 2.96730091613813, y: 0.0509513742071882},*/
-
-
-
 
     const dots = svgD3.append('g');
 
@@ -164,11 +165,11 @@ export class CorrelationComponent implements OnInit {
       .attr("cx", d => x(d.x))
       .attr("cy", d => y(d.y))
       .attr("r", 3)
-      .style("opacity", .5)
-      .style("fill", "#69b3a2");
+      .style("fill", "#47b9ff");
 
     //Añadiendo título al gráfico
     svgD3.append("text")
+    .style("font", "sans-serif")
       .attr("x", (width / 2))
       .attr("y", -margin.top / 2)
       .attr("text-anchor", "middle")
@@ -177,6 +178,7 @@ export class CorrelationComponent implements OnInit {
 
     //Añadiendo título al eje Y
     svgD3.append("text")
+    .style("font", "sans-serif")
       .attr("transform", "rotate(-90)")
       .attr("y", -margin.left)
       .attr("x", 0 - (height / 2))
@@ -186,10 +188,62 @@ export class CorrelationComponent implements OnInit {
 
     //Añadiendo título al eje X
     svgD3.append("text")
-      .attr("transform", "translate(" + (width / 2) + " ," + (height + margin.bottom) + ")")
+    .style("font", "sans-serif")
+      .attr("transform", "translate(" + (width / 2) + " ," + (height + margin.top) + ")")
       .style("text-anchor", "middle")
       .text("Porcentaje de población con obesidad");
 
+    //Añadiendo texto izq superior
+    svgD3.append("text")
+      .attr("font-family", "Arial, Helvetica, sans-serif")
+      .attr("transform", "translate(" + margin.left / 2 + " ," + margin.top + ")")
+      .style("text-anchor", "left")
+      .text("Alto % Fallecimiento");
+
+    svgD3.append("text")
+      .attr("font-family", "Arial, Helvetica, sans-serif")
+      .attr("transform", "translate(" + margin.left / 2 + " ," + 1.5 * margin.top + ")")
+      .style("text-anchor", "left")
+      .text("Bajo % Obesidad");
+
+    //Añadiendo texto izq inferior
+    svgD3.append("text")
+    .style("font", "sans-serif")
+      .attr("transform", "translate(" + margin.left / 2 + " ," + (height / 2 + margin.top) + ")")
+      .style("text-anchor", "left")
+      .text("Bajo % Fallecimiento");
+
+    svgD3.append("text")
+    .style("font", "sans-serif")
+      .attr("transform", "translate(" + margin.left / 2 + " ," + (height / 2 + 1.5 * margin.top) + ")")
+      .style("text-anchor", "left")
+      .text("Bajo % Obesidad");
+
+    //Añadiendo texto derecha superior
+    svgD3.append("text")
+    .style("font", "sans-serif")
+      .attr("transform", "translate(" + (width - 3 * margin.left) + " ," + margin.top + ")")
+      .style("text-anchor", "left")
+      .text("Alto % Fallecimiento");
+
+    svgD3.append("text")
+    .style("font", "sans-serif")
+      .attr("transform", "translate(" + (width - 3 * margin.left) + " ," + 1.5 * margin.top + ")")
+      .style("text-anchor", "left")
+      .text("Alto % Obesidad");
+
+    //Añadiendo texto izq inferior
+    svgD3.append("text")
+    .style("font", "sans-serif")
+      .attr("transform", "translate(" + (width - 3 * margin.left) + " ," + (height / 2 + margin.top) + ")")
+      .style("text-anchor", "left")
+      .text("Bajo % Fallecimiento");
+
+    svgD3.append("text")
+    .style("font", "sans-serif")
+      .attr("transform", "translate(" + (width - 3 * margin.left) + " ," + (height / 2 + 1.5 * margin.top) + ")")
+      .style("text-anchor", "left")
+      .text("Alto % Obesidad");
 
     //-------------------------------------------------------------------------------------
 
@@ -228,16 +282,29 @@ export class CorrelationComponent implements OnInit {
       }
     }
     );
+  
   }
 
   createGraphToast(data: any) {
 
     const options = {
-      chart: { title: 'Correlation - Toast', width: 900, height: 300 },
+      chart: { title: 'Correlation - Toast', width: window.innerWidth-50, height: 600 },
+      legend:{
+        visible:false
+      },
       xAxis: {
-        title: 'Porcentaje de población con obesidad'
+        title: 'Porcentaje de población con obesidad',
+        scale:{
+          min:0,
+          max:50
+        }
+
       },
       yAxis: { title: 'Porcentaje de muertes por covid en personas infectadas' },
+      scale:{
+        min:0,
+        max:0.20
+      }
     };
 
     const el = document.getElementById('chart-area');
@@ -250,8 +317,8 @@ export class CorrelationComponent implements OnInit {
 
     for (let i = 1; i < csvRecordsArray.length; i++) {
       let currentRecord = (<string>csvRecordsArray[i]).split(',');
-      let x = parseFloat(currentRecord[24]);//*parseFloat(currentRecord[30]);
-      let y = parseFloat(currentRecord[27]);//*parseFloat(currentRecord[30]);
+      let x = parseFloat(currentRecord[24]);
+      let y = parseFloat(currentRecord[27]);
       if (isNaN(x)) {
         x = 0;
       }
@@ -261,7 +328,6 @@ export class CorrelationComponent implements OnInit {
       this.values.push({ x, y });
 
     }
-    console.log(this.values)
 
   }
 

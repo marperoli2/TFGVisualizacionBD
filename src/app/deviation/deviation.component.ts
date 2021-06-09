@@ -1,5 +1,5 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { ColumnChart } from '@toast-ui/chart';
+import { BarChart, ColumnChart } from '@toast-ui/chart';
 import { BarController, BarElement, CategoryScale, Chart, LinearScale, Title } from 'chart.js';
 import * as d3 from 'd3';
 import { Injectable } from '@angular/core';
@@ -32,7 +32,7 @@ export class DeviationComponent implements OnInit {
       {
         label: '',
         data: [],
-        backgroundColor: 'rgba(0, 143, 57)'
+        backgroundColor: '#47b9ff'
       },
     ],
   };
@@ -130,19 +130,20 @@ export class DeviationComponent implements OnInit {
             text: 'Deviation - ChartsJS',
           }
         },
+        indexAxis: 'y',
         scales: {
-          y: {
+          x: {
             type: 'linear',
             beginAtZero: true,
             title: {
               display: true,
-              text: 'Porcentaje de diferencia Bélgica - España',
+              text: 'Tipo de alimentos',
             },
           },
-          x: {
+          y: {
             title: {
               display: true,
-              text: 'Tipo de alimentos',
+              text: 'Porcentaje de diferencia Bélgica - España',
             },
           }
         }
@@ -155,29 +156,31 @@ export class DeviationComponent implements OnInit {
   createGraphToast(data: any) {
 
     const options = {
-      chart: { title: '', width: 15000, height: 500 },
-      xAxis: {
-        title: 'Tipo de alimentos',
+      chart: { title: 'Deviation - Toast', width: window.innerWidth -50, height: 500 },
+      legend: {
+        visible: false
       },
-      yAxis: {
+      xAxis: {
         title: 'Porcentaje de diferencia Bélgica - España',
       },
+      yAxis: {
+        title: 'Tipo de alimentos',
+      },
+     
     };
 
-    options.chart.title = "Deviation - Toast";
-    options.chart.width = 70 * data.series[0].data.length;
-
     const el = document.getElementById('grafica');
-    const chart = new ColumnChart({ el, data, options });
+    const chart = new BarChart({ el, data, options });
 
 
   }
 
   private draw3d(): void {
 
-    let margin: number = 50;
-    let width: number = 1200;
-    let height: number = 400;
+
+    var margin = { top: 30, right: 0, bottom: 50, left: 120 };
+    var width = window.innerWidth  -margin.left -margin.right ;
+    var height = 600 - margin.top - margin.bottom;
 
     let data: number[] = [];
     for (let k = 0; k < this.d3Data.length; k++) {
@@ -186,90 +189,69 @@ export class DeviationComponent implements OnInit {
 
     this.svg = d3.select("figure#imagen")
       .append("svg")
-      .attr("width", width + (margin * 2))
-      .attr("height", height + (margin * 3.5))
+      .attr("width", width)
+      .attr("height", height + margin.top + margin.bottom)
       .append("g")
-      .attr("transform", "translate(" + margin + "," + margin + ")");
+      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-    const x = d3.scaleBand()
-      .range([0, width])
-      .domain(this.d3Data.map(d => d.foodSupply));
+    const y = d3.scaleBand()
+      .range([0, height])
+      .domain(this.d3Data.map(d => d.foodSupply))
+      .align(0.5)
+      .padding(0.4);
 
-    // Draw the X-axis on the DOM
+    this.svg.append("g")
+      .call(d3.axisLeft(y)
+      .tickSize(0));
+
+   
+    var x = d3.scaleLinear()
+      .domain([Math.trunc(d3.min(data))-0.5 ,-Math.trunc(d3.min(data))+0.5 ])
+      .range([0, width]);
+
     this.svg.append("g")
       .attr("transform", "translate(0," + height + ")")
-      .call(d3.axisBottom(x))
-      .selectAll("text")
-      .attr("transform", "translate(-10,0)rotate(-45)")
-      .style("text-anchor", "end");
-
-    // Create the Y-axis band scale
-
-    var y = d3.scaleLinear()
-      .domain([d3.min(data), d3.max(data)])
-      .range([height, 0]);
-
-    // Añado una línea central
-    this.svg.append("line")
-      .attr("x1", -6)
-      .attr("y1", y(0))//so that the line passes through the y 0
-      .attr("x2", width)
-      .attr("y2", y(0))//so that the line passes through the y 0
-      .style("stroke", "black");
-
-    const yAxisScale = d3.scaleLinear()
-      .domain([d3.min(data), d3.max(data)])
-      .range([height, 0]);
-
-
-    var yAxis = d3.axisLeft(yAxisScale)
-      .ticks(5)
-      .tickSizeInner(-width);
-
-    this.svg.append('g')
-      .attr('transform', function (d) {
-        return 'translate(0, 0)';
-      })
-      .call(yAxis)
+      .call(d3.axisBottom(x)
+        .tickSizeInner(-height))
       .call(g => g.selectAll(".tick:not(:first-of-type) line")
-        .attr("stroke", "grey"));;
-
+        .attr("stroke", "grey"));
 
     // Create and fill the bars
-    this.svg.selectAll("bars")
-      .data(this.d3Data)
-      .enter()
-      .append("rect")
-      .attr("x", function (d) { return x(d.foodSupply); })
-      .attr("y", function (d) { return y(Math.max(0, d.value)); })
-      .attr("height", function (d) { return Math.abs(y(0) - y(d.value)); })
-      .attr("width", x.bandwidth())
-      .style("fill", "blue")
-      .style("stroke", "black")
-      .style("stroke-width", "1px");
+      this.svg.selectAll("bars")
+        .data(this.d3Data)
+        .enter()
+        .append("rect")
+        .attr("x", function (d) { if (d.value < 0) {return x(d.value);} else return x(0);})
+        .attr("y", function (d) { return y(d.foodSupply); })
+        .attr("height", y.bandwidth)
+        .attr("width", function (d) { if (d.value < 0) {return x(0)-x(d.value);} else return x(d.value)- x(0);})
+        .style("fill", "#47b9ff");
 
     //Añadiendo título al gráfico
     this.svg.append("text")
-      .attr("x", width / 2)
+      .attr("x", width/2)
       .attr("y", -10)
       .attr("text-anchor", "middle")
       .style("font-size", "16px")
+      .style("font", "sans-serif")
       .text("Deviation - d3");
 
     //Añadiendo título al eje Y
     this.svg.append("text")
       .attr("transform", "rotate(-90)")
-      .attr("y", 0 - margin * 1.1)
+      .attr("y", 0 - margin.left)
       .attr("x", 0 - (height / 2))
       .attr("dy", "1em")
       .style("text-anchor", "middle")
-      .text("Porcentaje de diferencia Bélgica - España");
+      .style("font", "sans-serif")
+      .text("Tipo de alimentos");
 
     //Añadiendo título al eje X
     this.svg.append("text")
-      .attr("transform", "translate(" + (width / 2) + " ," + (height + margin * 2) + ")")
+      .attr("transform", "translate(" + (width / 2) + " ," + (height + margin.top * 1.5) + ")")
       .style("text-anchor", "middle")
-      .text("Tipo de alimentos");
+      .style("font", "sans-serif")
+      .text("Porcentaje de diferencia Bélgica - España");
 
   }
 
@@ -349,9 +331,7 @@ export class DeviationComponent implements OnInit {
     for (let k = 0; k < belgiumValues.length; k++) {
       this.values.push((belgiumValues[k] - spainValues[k]).toFixed(2))
     }
-    console.log(belgiumValues);
-    console.log(spainValues);
-    console.log(this.values)
+   
   }
 
   getHeaderArray(csvRecordsArr: any) {

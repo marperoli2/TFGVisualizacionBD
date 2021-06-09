@@ -35,8 +35,8 @@ export class PartToWholeComponent implements OnInit {
   private svg: any;
   private maxX: number = 0;
   private margin3d: any;
-  private width3d:number;
-  private height3d:number;
+  private width3d: number;
+  private height3d: number;
 
   private d3Data: any[] = [];
   private d3EjeY: any[] = [];
@@ -137,10 +137,8 @@ export class PartToWholeComponent implements OnInit {
 
     // Prepara los datos
     for (let i = 0; i < this.d3EjeY.length; i++) {
-      this.d3Data.push({ "group": this.d3EjeY[i], "España": spain[i], "Belgica": belgica[i], "Slovenia": slovenia[i], "United Kingdom": uk[i], "Czechia": czechia[i] });
+      this.d3Data.push({ "group": this.d3EjeY[i], "Spain": spain[i], "Belgium": belgica[i], "Slovenia": slovenia[i], "United Kingdom": uk[i], "Czechia": czechia[i] });
     }
-
-    console.log(this.d3Data)
 
     // Obtiene el valor máximo para el eje x
     this.maxX = spain.reduce((n, m) => Math.max(n, m));
@@ -154,7 +152,7 @@ export class PartToWholeComponent implements OnInit {
       this.maxX = czechia.reduce((n, m) => Math.max(n, m));
 
     // Redonde para que el eje x sea múltiplo de 5
-    this.maxX = (Math.trunc(this.maxX/5)+1)*5;
+    this.maxX = (Math.trunc(this.maxX / 5) + 1) * 5;
 
     // Crea la gráfica
     this.createSvg();
@@ -202,7 +200,7 @@ export class PartToWholeComponent implements OnInit {
   createGraphToast(data: any) {
 
     const options = {
-      chart: { title: '', width: 15000, height: 500 },
+      chart: { title: 'Part To Whole - Toast', width: window.innerWidth, height: 900 },
       xAxis: {
         title: 'Porcentaje de consumo',
       },
@@ -210,9 +208,7 @@ export class PartToWholeComponent implements OnInit {
         title: 'Tipo de alimentos',
       },
     };
-
-    options.chart.title = "Part To Whole - Toast";
-    options.chart.width = 70 * data.series[0].data.length;
+    // options.chart.width = 70 * data.series[0].data.length;
 
     const el = document.getElementById('grafica');
     const chart = new BarChart({ el, data, options });
@@ -225,7 +221,7 @@ export class PartToWholeComponent implements OnInit {
 
     this.margin3d = { top: 10, right: 30, bottom: 100, left: 140 }
     this.width3d = window.innerWidth - this.margin3d.left - this.margin3d.right - 45;
-    this.height3d = 600 - this.margin3d.top - this.margin3d.bottom;
+    this.height3d = 1000 - this.margin3d.top - this.margin3d.bottom;
 
     this.svg = d3.select("figure#imagen")
       .append("svg")
@@ -284,6 +280,7 @@ export class PartToWholeComponent implements OnInit {
 
     //Añadiendo título al gráfico
     this.svg.append("text")
+    .style("font", "sans-serif")
       .attr("x", this.width3d / 2)
       .attr("y", 10)
       .attr("text-anchor", "middle")
@@ -292,6 +289,7 @@ export class PartToWholeComponent implements OnInit {
 
     //Añadiendo título al eje Y
     this.svg.append("text")
+    .style("font", "sans-serif")
       .attr("transform", "rotate(-90)")
       .attr("y", -this.margin3d.left)
       .attr("x", 0 - (this.height3d / 2))
@@ -300,7 +298,8 @@ export class PartToWholeComponent implements OnInit {
       .text("Tipo de alimentos");
 
     //Añadiendo título al eje X
-    this.svg.append("text")
+    this.svg.append("text") 
+    .style("font", "sans-serif")
       .attr("transform", "translate(" + (this.width3d / 2) + ", " + (this.height3d + 50) + ")")
       .style("text-anchor", "middle")
       .text("Porcentaje de consumo en");
@@ -321,6 +320,7 @@ export class PartToWholeComponent implements OnInit {
 
     // draw legend text
     legend.append("text")
+    .style("font", "sans-serif")
       .style("font", "14px open-sans")
       .attr("x", this.width3d - 24)
       .attr("y", 18)

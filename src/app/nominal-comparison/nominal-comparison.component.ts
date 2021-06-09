@@ -33,7 +33,7 @@ export class NominalComparisonComponent implements OnInit {
       {
         label: '',
         data: [],
-        backgroundColor: 'rgba(0, 143, 57)'
+        backgroundColor: '#47b9ff'
       }
     ],
   };
@@ -127,7 +127,7 @@ export class NominalComparisonComponent implements OnInit {
   private createGraphChartsjs(data: any) {
 
     Chart.register(BarController, LinearScale, CategoryScale, BarElement, Title);
-    this.barCanvas.nativeElement.height = 1500;
+    this.barCanvas.nativeElement.height = 200;
     this.nominalComparisonChart = new Chart(this.barCanvas.nativeElement, {
       type: "bar",
       data: data,
@@ -162,7 +162,10 @@ export class NominalComparisonComponent implements OnInit {
   createGraphToast(data: any) {
 
     const options = {
-      chart: { title: '', width: window.innerWidth, height: 1500 },
+      chart: { title: 'Nominal Comparison & Ranking - Toast', width: window.innerWidth - 50, height: 1500 },
+      legend: {
+        visible: false
+      },
       xAxis: {
         title: 'Porcentaje de infectados que fallecen',
       },
@@ -171,8 +174,6 @@ export class NominalComparisonComponent implements OnInit {
       },
     };
 
-    options.chart.title = "Nominal Comparison & Ranking - Toast";
-
     const el = document.getElementById('grafica');
     const chart = new BarChart({ el, data, options });
 
@@ -180,17 +181,17 @@ export class NominalComparisonComponent implements OnInit {
 
   private createSvg(): void {
 
-    this.margin3d = { top: 100, right: 30, bottom: 100, left: 163 }
-    this.width3d = window.innerWidth - this.margin3d.left - this.margin3d.right - 45;
+    this.margin3d = { top: 100, right: 0, bottom: 100, left: 160 }
+    this.width3d = window.innerWidth - this.margin3d.left - this.margin3d.right -45;
     /*1750 - this.margin3d.left - this.margin3d.right*/
     this.height3d = 2000 - this.margin3d.top - this.margin3d.bottom;
 
     this.svg = d3.select("figure#imagen")
       .append("svg")
-      .attr("width", this.width3d + this.margin3d.left + this.margin3d.right)
+      .attr("width", this.width3d +this.margin3d.left + this.margin3d.right)
       .attr("height", this.height3d + this.margin3d.top + this.margin3d.bottom)
       .append("g")
-      .attr("transform", "translate(" + this.margin3d.left + "," + this.margin3d.top +")");
+      .attr("transform", "translate(" + this.margin3d.left + "," + this.margin3d.top + ")");
 
   }
 
@@ -203,7 +204,7 @@ export class NominalComparisonComponent implements OnInit {
 
     // Draw the X-axis on the DOM
     this.svg.append("g")
-      .attr("transform", "translate(0," + this.height3d  + ")")
+      .attr("transform", "translate(0," + this.height3d + ")")
       .call(d3.axisBottom(x)
         .tickSizeInner(-(this.height3d)))
       .call(g => g.selectAll(".tick:not(:first-of-type) line")
@@ -212,29 +213,30 @@ export class NominalComparisonComponent implements OnInit {
     // Create the Y-axis band scale
     const y = d3.scaleBand()
       .domain(data.map(d => d.country))
-      .range([ 0, this.height3d])
+      .range([0, this.height3d])
       .padding(0.4);
 
     // Draw the Y-axis on the DOM
     this.svg.append("g")
       .call(d3.axisLeft(y)
-      .tickSize(0));
+        .tickSize(0));
 
     // Create and fill the bars
     this.svg.selectAll("bars")
       .data(data)
       .enter()
       .append("rect")
-      .attr("x",0) // d => x(d.death)
-      .attr("y",function (d) {return y(d.country)})
-      .attr("width", function (d) {return x(d.death); })
-      .attr("height",y.bandwidth())
-      .attr("fill", "#d04a35");
+      .attr("x", 0) // d => x(d.death)
+      .attr("y", function (d) { return y(d.country) })
+      .attr("width", function (d) { return x(d.death); })
+      .attr("height", y.bandwidth())
+      .attr("fill", "#47b9ff");
 
     //Añadiendo título al gráfico
     this.svg.append("text")
+      .style("font", "sans-serif")
       .attr("x", (this.width3d / 2))
-      .attr("y", 0 -25)
+      .attr("y", 0 - 25)
       .attr("text-anchor", "middle")
       .style("font-size", "16px")
       //Añadiendo título al eje Y
@@ -242,8 +244,9 @@ export class NominalComparisonComponent implements OnInit {
 
 
     this.svg.append("text")
+      .style("font", "sans-serif")
       .attr("transform", "rotate(-90)")
-      .attr("y", 0 - this.margin3d.left )
+      .attr("y", 0 - this.margin3d.left)
       .attr("x", 0 - (this.height3d / 2))
       .attr("dy", "1em")
       .style("text-anchor", "middle")
@@ -251,6 +254,7 @@ export class NominalComparisonComponent implements OnInit {
 
     //Añadiendo título al eje X
     this.svg.append("text")
+      .style("font", "sans-serif")
       .attr("transform", "translate(" + (this.width3d / 2) + " ," + (this.height3d + 50) + ")")
       .style("text-anchor", "middle")
       .text("Porcentaje de infectados que fallecen");
