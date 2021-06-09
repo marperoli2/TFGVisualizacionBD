@@ -62,8 +62,7 @@ export class DistributionComponent implements OnInit {
     //Cargamos los datos que se van a representar en las gráficas
     this.getDataRecordsArrayFromCSVFile(csvRecordsArray);
 
-    var el = document.createElement('div')
-    document.body.appendChild(el);
+    const el = document.getElementById('grafica');
 
     var vis = new candela.components.Histogram(el, {
       data: this.values,
