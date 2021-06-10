@@ -274,7 +274,7 @@ export class TimeSeriesComponent implements OnInit {
 
   private drawLine(): void {
 
-    // Para dibujar una linea por grupo
+    // Para dibujar las líneas que forman el gráfico
 
     var x = d3.scaleLinear()
       .domain([this.minX, this.maxX])
