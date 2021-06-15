@@ -182,7 +182,7 @@ export class NominalComparisonComponent implements OnInit {
   private createSvg(): void {
 
     this.margin3d = { top: 100, right: 0, bottom: 100, left: 160 }
-    this.width3d = window.innerWidth - this.margin3d.left - this.margin3d.right - 45;
+    this.width3d = window.innerWidth - this.margin3d.left - this.margin3d.right - 90;
     /*1750 - this.margin3d.left - this.margin3d.right*/
     this.height3d = 2000 - this.margin3d.top - this.margin3d.bottom;
 

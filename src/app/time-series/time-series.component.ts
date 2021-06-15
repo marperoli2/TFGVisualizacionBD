@@ -233,7 +233,7 @@ export class TimeSeriesComponent implements OnInit {
   private createSvg(): void {
 
     this.margin3d = { top: 25, right: 50, bottom: 75, left: 50 }
-    this.width3d = window.innerWidth - this.margin3d.left - this.margin3d.right - 50;
+    this.width3d = window.innerWidth - this.margin3d.left - this.margin3d.right - 80;
     this.height3d = 700 - this.margin3d.top - this.margin3d.bottom;
 
     this.svg = d3.select("figure#imagen")

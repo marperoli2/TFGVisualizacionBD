@@ -13,7 +13,9 @@ import { DistributionComponent } from './distribution/distribution.component';
 import { TimeSeriesComponent } from './time-series/time-series.component';
 import { DeviationComponent } from './deviation/deviation.component';
 import { HomeComponent } from './home/home.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
+import {MaterialModule} from './material/material.module';
 const routes: Routes = [
 
   { path: 'nominalComparison', component: NominalComparisonComponent },
@@ -41,7 +43,9 @@ const routes: Routes = [
     BrowserModule,
     AppRoutingModule,
     RouterModule.forRoot(routes),
-    HttpClientModule
+    HttpClientModule,
+    BrowserAnimationsModule,
+    MaterialModule
   ],
   providers: [],
   bootstrap: [AppComponent]

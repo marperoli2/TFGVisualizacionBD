@@ -200,7 +200,7 @@ export class PartToWholeComponent implements OnInit {
   createGraphToast(data: any) {
 
     const options = {
-      chart: { title: 'Part To Whole - Toast', width: window.innerWidth, height: 900 },
+      chart: { title: 'Part To Whole - Toast' },
       xAxis: {
         title: 'Porcentaje de consumo',
       },
@@ -208,11 +208,9 @@ export class PartToWholeComponent implements OnInit {
         title: 'Tipo de alimentos',
       },
     };
-    // options.chart.width = 70 * data.series[0].data.length;
-
+  
     const el = document.getElementById('grafica');
     const chart = new BarChart({ el, data, options });
-
 
   }
 
@@ -220,7 +218,7 @@ export class PartToWholeComponent implements OnInit {
   private createSvg(): void {
 
     this.margin3d = { top: 10, right: 30, bottom: 100, left: 140 }
-    this.width3d = window.innerWidth - this.margin3d.left - this.margin3d.right - 45;
+    this.width3d = window.innerWidth - this.margin3d.left - this.margin3d.right - 120;
     this.height3d = 1000 - this.margin3d.top - this.margin3d.bottom;
 
     this.svg = d3.select("figure#imagen")

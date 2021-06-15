@@ -1,0 +1,51 @@
+#titulo {
+    margin-left: 1vw;
+}
+
+
+
+#titulo_menu{
+  margin-left: 0.2vw;
+  font-size: 0.8em;
+  color: aliceblue;
+}
+
+#contenedor {
+    font-size: 1.6em ;
+    line-height: 4vh;
+  
+}
+
+.mat-sidenav-content{
+ 
+
+}
+
+
+.linea-spacer {
+    flex:1 1 auto;
+}
+
+mat-sidenav {
+    width: 10em;
+    background-color:darkslateblue;
+    
+}
+
+  
+  .tfg-label {
+    font-size: 4em;
+    color: darkturquoise;
+    
+  }
+  
+   
+  .tfg-button-container {
+    display: flex;
+       
+  }
+  .tfg-button {
+    margin-left: 1vw;
+    display: flex;
+  }
+  
