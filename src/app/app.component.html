@@ -1,17 +1,17 @@
 <mat-toolbar color="primary">
     <div class="tfg-button-container">
         <div class="tfg-button">
-        <a mat-mini-fab color="primary" href="./">
-            <mat-icon>home</mat-icon>
-        </a>
-    </div>
-    <div class="tfg-button">
-        <button mat-mini-fab color="primary" (click)="desplegable.toggle()" >
+            <a mat-mini-fab color="primary" href="./">
+                <mat-icon>home</mat-icon>
+            </a>
+        </div>
+        <div class="tfg-button">
+            <button mat-mini-fab color="primary" (click)="desplegable.toggle()">
             <mat-icon>menu</mat-icon>
         </button>
         </div>
     </div>
-    <span id="titulo">Representación de datos</span>
+    <span id="titulo">Trabajo de Fin de Grado</span>
     <span class="linea-spacer"></span>
     <span id="titulo">Universidad de Sevilla</span>
 </mat-toolbar>
@@ -19,7 +19,7 @@
 <mat-sidenav-container id="contenedor">
     <mat-sidenav #desplegable (click)="desplegable.toggle()" mode="side">
 
-        <p  routerLink="./nominalComparison" style="padding: 2px;">
+        <p routerLink="./nominalComparison" style="padding: 2px; margin-top: 10px;">
             <button mat-raised-button color="primary">Comparación nominal y ranking</button>
         </p>
         <p routerLink="./partToWhole" style="padding: 1px;">
@@ -35,7 +35,7 @@
             <button mat-raised-button color="primary">Correlación</button>
         </p>
         <p routerLink="./timeSeries" style="padding: 1px;">
-            <button mat-raised-button color="primary">Serie temporal</button>
+            <button mat-raised-button color="primary">Series temporales</button>
         </p>
 
 
@@ -45,7 +45,9 @@
     </mat-sidenav-content>
 </mat-sidenav-container>
 
-<mat-toolbar color="primary">
-    <span class="linea-spacer"></span>
-    <span id="titulo">Marta Perea Olías</span>
-</mat-toolbar>
+<footer>
+    <mat-toolbar color="primary">
+        <span class="linea-spacer"></span>
+        <span id="titulo">Marta Perea Olías</span>
+    </mat-toolbar>
+</footer>

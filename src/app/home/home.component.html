@@ -1,26 +1,43 @@
-<h1>TFG: Estudio y análisis de la visualización eficiente del Big Data.</h1>
-<h2>Visualización de los distintos tipos de relaciones entre los datos.</h2>
-<ul>
-    <p>Los siguientes gráficos están hecho con un data set relacionado al Covid-19</p>
-    <li>
-        Visualización de la relación <a href="./nominalComparison">comparación nominal y ranking</a>.
-    </li>
-    <li>
-        Visualización de la relación <a href="./partToWhole">parte del todo</a>.
-    </li>
-    <li>
-        Visualización de la relación <a href="./deviation">desviación</a>.
-    </li>
-    <li>
-        Visualización de la relación <a href="./distribution">distribución</a>.
-    </li>
-    <li>
-        Visualización de la relación <a href="./correlation">correlación</a>.
-    </li>
-    <p>El siguiente gráfico está hecho con un data set relacionado el uso de internet en el mundo</p>
-    <li>
-        Visualización de la relación <a href="./timeSeries">serie temporal</a>.
-    </li>
-</ul>
-<br>
-<h5>Marta Perea Olías.<br>Universidad de Sevilla.</h5>
+<div class="container">
+    <h1 class="tfg-label">Visualización efectiva de datos: estudio y análisis de distintas herramientas.</h1>
+    <p>En esta aplicación ofrecemos una forma de comparar diferentes implementaciones de gráficos con distintas herramientas.</p>
+    <p>Para las representaciones se ha usado un conjunto de datos sobre el COVID-19 y la dieta en los distintos países del mundo. Se ha creado una representación con cada una de las relaciones que se dan entre los datos basados en el libro sobre visualización
+        eficiente de datos "Show me the numbers" de Stephen Few. </p>
+    <p>Para acceder a cada una de las representaciones usa el menu desplegable. Dentro de cada una de las pestañas encontrarás información sobre la relación que se esta mostrando, qué información esperamos obtener a partir de estos gráficos y las conclusiones
+        obtenidas.
+    </p>
+    <p>A continuación se muestra lo que es el hilo conductor de las visualizaciones</p>
+    <ul>
+        <li>
+            <p><b>El porcentaje de personas fallecidas en cada país:</b> con los datos sobre personas infectadas fallecidas por COVID, realizaremos una comparación nominal, acompañada de ranking, es decir, lo que haremos será mostrar en un gráfico el porcentaje
+                de población infectada fallecida de cada país, ordenando los datos de mayor a menor. De esta forma podremos observar de forma sencilla que país tiene un mayor porcentaje de muerte por COVID y nos podremos también hacer una idea de la diferencia
+                con otros países. Esta es la relación de <a href="./nominalComparison">comparación nominal y ranking</a>.</p>
+        </li>
+        <li>
+            <p><b>La comparativa de cada tipo de alimento en la dieta de cinco países:</b> con los datos sobre las dietas de cada país se realizará un gráfico que representará la relación parte del todo que se puede dar entre los datos. Es decir, lo que
+                observaremos es del 100% de tipos de comida que se consume en un país, el porcentaje que se consume de cada tipo. Para esto, principalmente nos fijaremos en los datos de España, con los cuatro países que tiene una mayor tasa de muerte
+                por COVID. De esta forma, podremos observar cómo de diferente es la dieta de cada uno de estos países, y si puede tener algo que ver con la cantidad de muertes. Esta es la relación de <a href="./partToWhole">parte del todo</a>.</p>
+        </li>
+        <li>
+            <p><b>El porcentaje de la diferencia entre la dieta española con la del país con más muerte:</b> de la comparación anterior, ahora nos centraremos en la diferencia de la dieta española con la del país con más muerte. Esta diferencia se basa en
+                la relación de desviación que se da entre los datos, de esta forma podremos observar en qué cantidad es distinto, si positiva o negativa, en un simple vistazo. Esta es la relación de <a href="./deviation">desviación</a>.</p>
+        </li>
+        <li>
+            <p><b>Número de países según el porcentaje de obesidad de su población:</b> El no mantener una buena dieta, puede provocar casos de obesidad en las personas, siendo esto un factor de riesgo más a la hora de enfrentarse al COVID. Consultaremos,
+                con la relación de distribución y los casos de obesidad, el número de países que se encuentran en un rango de obesidad de x a y. Esta es la relación de <a href="./distribution">distribución</a>.</p>
+        </li>
+        <li>
+            <p><b>Relación de la obesidad y muerte a nivel mundial:</b> como acabamos de mencionar, la obesidad constituye un factor de riesgo que, con una buena alimentación, se podría evitar. Para constatar que las suposiciones de que la obesidad juega
+                un papel importante a la hora de enfrentar el COVID, usamos la relación de distribución, en la que compararemos el índice de obesidad con el porcentaje de muertes por COVID en todos los países del mundo. Con esto, podremos observar si
+                la tendencia es positiva, es decir, que nuestras suposiciones son ciertas, o son negativas. Esta es la relación de <a href="./correlation">correlación</a>.</p>
+        </li>
+        <li>
+            <p>Por último, y aunque no siga el hilo del análisis sobre el COVID, como este conjunto de datos no nos ofrece ningún tipo de relación con respecto al tiempo, para poder mostrar y estudiar un gráfico que pertenezca a la relación entre los datos
+                de series temporales, se ha hecho uso de un segundo conjunto de datos, de otro tema totalmente distinto. La dificultad de encontrar datos procesados de COVID con respecto a un tiempo, nos ha llevado a usar un conjunto de datos sobre el
+                uso de internet a través de los años. De esta forma, podremos consultar cómo ha ido variando el porcentaje de la población que usa internet desde sus inicios, tanto en el mundo, como en distintos países del mundo. Esta es la relación de
+                <a href="./timeSeries">series temporales</a>.
+            </p>
+        </li>
+    </ul>
+    <br>
+</div>

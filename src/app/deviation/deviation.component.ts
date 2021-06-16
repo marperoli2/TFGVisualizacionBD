@@ -156,7 +156,7 @@ export class DeviationComponent implements OnInit {
   createGraphToast(data: any) {
 
     const options = {
-      chart: { title: 'Deviation - Toast', width: window.innerWidth -50, height: 500 },
+      chart: { title: 'Deviation - Toast', width: window.innerWidth - 50, height: 500 },
       legend: {
         visible: false
       },
@@ -166,7 +166,7 @@ export class DeviationComponent implements OnInit {
       yAxis: {
         title: 'Tipo de alimentos',
       },
-     
+
     };
 
     const el = document.getElementById('grafica');
@@ -179,7 +179,7 @@ export class DeviationComponent implements OnInit {
 
 
     var margin = { top: 30, right: 0, bottom: 50, left: 120 };
-    var width = window.innerWidth  -margin.left -margin.right ;
+    var width = window.innerWidth - margin.left - margin.right;
     var height = 600 - margin.top - margin.bottom;
 
     let data: number[] = [];
@@ -202,11 +202,13 @@ export class DeviationComponent implements OnInit {
 
     this.svg.append("g")
       .call(d3.axisLeft(y)
-      .tickSize(0));
+        .tickSizeInner(-width))
+      .call(g => g.selectAll(".tick:not(:first-of-type) line")
+        .attr("stroke", "grey"));
 
-   
+
     var x = d3.scaleLinear()
-      .domain([Math.trunc(d3.min(data))-0.5 ,-Math.trunc(d3.min(data))+0.5 ])
+      .domain([Math.trunc(d3.min(data)) - 0.5, -Math.trunc(d3.min(data)) + 0.5])
       .range([0, width]);
 
     this.svg.append("g")
@@ -217,19 +219,19 @@ export class DeviationComponent implements OnInit {
         .attr("stroke", "grey"));
 
     // Create and fill the bars
-      this.svg.selectAll("bars")
-        .data(this.d3Data)
-        .enter()
-        .append("rect")
-        .attr("x", function (d) { if (d.value < 0) {return x(d.value);} else return x(0);})
-        .attr("y", function (d) { return y(d.foodSupply); })
-        .attr("height", y.bandwidth)
-        .attr("width", function (d) { if (d.value < 0) {return x(0)-x(d.value);} else return x(d.value)- x(0);})
-        .style("fill", "#47b9ff");
+    this.svg.selectAll("bars")
+      .data(this.d3Data)
+      .enter()
+      .append("rect")
+      .attr("x", function (d) { if (d.value < 0) { return x(d.value); } else return x(0); })
+      .attr("y", function (d) { return y(d.foodSupply); })
+      .attr("height", y.bandwidth)
+      .attr("width", function (d) { if (d.value < 0) { return x(0) - x(d.value); } else return x(d.value) - x(0); })
+      .style("fill", "#47b9ff");
 
     //Añadiendo título al gráfico
     this.svg.append("text")
-      .attr("x", width/2)
+      .attr("x", width / 2)
       .attr("y", -10)
       .attr("text-anchor", "middle")
       .attr("font-family", "Arial, Helvetica, sans-serif")
@@ -333,7 +335,7 @@ export class DeviationComponent implements OnInit {
     for (let k = 0; k < belgiumValues.length; k++) {
       this.values.push((belgiumValues[k] - spainValues[k]).toFixed(2))
     }
-   
+
   }
 
   getHeaderArray(csvRecordsArr: any) {

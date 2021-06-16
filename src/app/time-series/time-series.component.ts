@@ -108,15 +108,14 @@ export class TimeSeriesComponent implements OnInit {
 
     //Creación del gráfico con Toast
     this.createGraphToast(toastData);
-
     //-------------------------------------------------------------------------------------
     //CHARTSJS
     this.chartsjsData.labels = seriesName;
     this.chartsjsData.datasets.push({ label: "España", data: spain, borderColor: 'rgba(59, 131, 189)', backgroundColor: 'rgba(59, 131, 189)' });
-    this.chartsjsData.datasets.push({ label: "Portugal", data: portugal, borderColor: 'rgba(255, 128, 0)', backgroundColor: 'rgba(255, 128, 0)' });
+    this.chartsjsData.datasets.push({ label: "Portugal", data: portugal, borderColor: '#FFFF00', backgroundColor: '#FFFF00' });
     this.chartsjsData.datasets.push({ label: "Italia", data: italia, borderColor: '#ff0000', backgroundColor: '#ff0000' });
     this.chartsjsData.datasets.push({ label: "Francia", data: francia, borderColor: '#00aa7f', backgroundColor: '#00aa7f' });
-    this.chartsjsData.datasets.push({ label: "Mundo", data: mundo, borderColor: '#8e00d5', backgroundColor: '#8e00d5' });
+    this.chartsjsData.datasets.push({ label: "Mundo", data: mundo, borderColor: '#B695C0', backgroundColor: '#B695C0' });
 
 
     //Creación del gráfico con Chartsjs
@@ -247,7 +246,7 @@ export class TimeSeriesComponent implements OnInit {
 
 
   private addPoint(x: any, y: any) {
-    let colores: any[] = ['rgba(59, 131, 189)', 'rgba(255, 128, 0)', '#ff0000', '#8e00d5', '#00aa7f'];
+    let colores: any[] = ['#5555ff', '#FFFF00', '#ff0000', '#00aa7f', '#B695C0'];
     let puntos: any[] = [];
     for (let i = 0; i < this.d3Data.length; i++) {
       for (let j = 0; j < (this.d3Data[i].values).length; j++) {
@@ -310,7 +309,7 @@ export class TimeSeriesComponent implements OnInit {
 
     var color = d3.scaleOrdinal()
       .domain(res)
-      .range(['rgba(59, 131, 189)', 'rgba(255, 128, 0)', '#ff0000', '#8e00d5', '#00aa7f']);
+      .range(['#5555ff', '#FFFF00', '#ff0000', '#00aa7f', '#B695C0']);
 
     this.svg.selectAll(".line")
       .data(this.d3Data)

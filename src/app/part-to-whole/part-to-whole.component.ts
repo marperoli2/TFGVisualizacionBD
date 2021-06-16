@@ -111,13 +111,13 @@ export class PartToWholeComponent implements OnInit {
 
     this.chartsjsData.datasets.push({ label: "Spain", data: spain, backgroundColor: 'rgba(59, 131, 189)' });
 
-    this.chartsjsData.datasets.push({ label: "Belgium", data: belgica, backgroundColor: 'rgba(255, 128, 0)' });
+    this.chartsjsData.datasets.push({ label: "Belgium", data: belgica, backgroundColor: '#FFFF00' });
 
     this.chartsjsData.datasets.push({ label: "Slovenia", data: slovenia, backgroundColor: '#ff0000' });
 
     this.chartsjsData.datasets.push({ label: "United Kingdom", data: uk, backgroundColor: '#00aa7f' });
 
-    this.chartsjsData.datasets.push({ label: "Czechia", data: czechia, backgroundColor: '#8e00d5' });
+    this.chartsjsData.datasets.push({ label: "Czechia", data: czechia, backgroundColor: '#B695C0' });
 
 
     //Creación del gráfico con Chartsjs
@@ -239,7 +239,8 @@ export class PartToWholeComponent implements OnInit {
       .padding(0.2);
 
     this.svg.append("g")
-      .call(d3.axisLeft(y));
+      .call(d3.axisLeft(y)
+      .tickSize(0));
 
     const x = d3.scaleLinear()
       .domain([0, this.maxX])
@@ -258,7 +259,7 @@ export class PartToWholeComponent implements OnInit {
 
     var color = d3.scaleOrdinal()
       .domain(subgrupos)
-      .range(['#5555ff', '#ffaa00', '#ff0000', '#00aa7f', '#8e00d5'])
+      .range(['#5555ff', '#FFFF00', '#ff0000', '#00aa7f', '#B695C0'])
 
 
     this.svg.append("g")
