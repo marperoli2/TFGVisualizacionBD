@@ -1,0 +1,33 @@
+#titulo {
+    margin-left: 1vw;
+    font-size: 15px;
+}
+
+#titulo_menu {
+    color: aliceblue;
+}
+
+#contenedor {
+    line-height: 4vh;
+}
+
+.linea-spacer {
+    flex: 1 1 auto;
+}
+
+mat-sidenav {
+    background-color: darkslateblue;
+}
+
+.tfg-label {
+    color: darkturquoise;
+}
+
+.tfg-button-container {
+    display: flex;
+}
+
+.tfg-button {
+    margin-left: 1vw;
+    display: flex;
+}
